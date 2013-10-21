@@ -13,6 +13,7 @@ Domain Path: /languages
 class Unpublish {
 
 	public static $supports_key = 'unpublish';
+	public static $cron_key = 'unpublish_cron';
 	public static $post_meta_key = 'unpublish_timestamp';
 
 	protected static $instance;
@@ -45,6 +46,8 @@ class Unpublish {
 
 		$this->date_format    = get_option( 'date_format' );
 		$this->time_format    = get_option( 'time_format' );
+
+		$this->cron_frequency = 'twicedaily';
 	}
 
 	/**
@@ -54,6 +57,12 @@ class Unpublish {
 
 		add_action( 'load-post.php', array( self::$instance, 'action_load_customizations' ) );
 		add_action( 'load-post-new.php', array( self::$instance, 'action_load_customizations' ) );
+
+		if ( ! wp_next_scheduled( self::$cron_key ) ) {
+			wp_schedule_event( time(), $this->cron_frequency, self::$cron_key );
+		}
+
+		add_action( self::$cron_key, array( self::$instance, 'unpublish_content' ) );
 
 	}
 
@@ -106,6 +115,45 @@ class Unpublish {
 				update_post_meta( $post_id, self::$post_meta_key, $timestamp );
 			else
 				delete_post_meta( $post_id, self::$post_meta_key );
+		}
+
+	}
+
+	/**
+	 * Unpublish any content that needs unpublishing
+	 */
+	public function unpublish_content() {
+		global $_wp_post_type_features;
+
+		$post_types = array();
+		foreach( $_wp_post_type_features as $post_type => $features ) {
+			if ( ! empty( $features[self::$supports_key] ) )
+				$post_types[]= $post_type;
+		}
+
+		$args = array(
+			'fields'          => 'ids',
+			'post_type'       => $post_types,
+			'post_status'     => 'any',
+			'posts_per_page'  => 40,
+			'meta_query'      => array(
+				array(
+					'meta_key'    => self::$post_meta_key,
+					'meta_value'  => current_time( 'timestamp' ),
+					'compare'     => '<',
+					'type'        => 'NUMERIC',
+					),
+				array(
+					'meta_key'    => self::$post_meta_key,
+					'meta_value'  => current_time( 'timestamp' ),
+					'compare'     => 'EXISTS',
+					)
+				)
+			);
+		$query = new WP_Query( $args );
+
+		foreach( $query->posts as $post_id ) {
+			wp_trash_post( $post_id );
 		}
 
 	}
