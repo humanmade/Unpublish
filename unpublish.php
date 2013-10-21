@@ -97,6 +97,9 @@ class Unpublish {
 		if ( ! post_type_supports( get_post_type( $post_id ), self::$supports_key ) )
 			return;
 
+		if ( ! current_user_can( 'edit_post', $post_id ) )
+			return;
+
 		if ( isset( $_POST[self::$supports_key] ) ) {
 			$timestamp = strtotime( $_POST[self::$supports_key] );
 			if ( ! empty( $timestamp ) )
