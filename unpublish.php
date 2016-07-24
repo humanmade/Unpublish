@@ -74,7 +74,7 @@ class Unpublish {
 		$post_type = get_current_screen()->post_type;
 		if ( post_type_supports( $post_type, self::$supports_key ) ) {
 			add_action( 'post_submitbox_misc_actions', array( self::$instance, 'render_unpublish_ui' ) );
-			add_action( 'save_' . $post_type, array( self::$instance, 'action_save_unpublish_timestamp' ) );
+			add_action( 'save_post_' . $post_type, array( self::$instance, 'action_save_unpublish_timestamp' ) );
 		}
 
 	}
