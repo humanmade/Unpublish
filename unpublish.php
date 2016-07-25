@@ -133,8 +133,6 @@ class Unpublish {
 
 		$vars = array(
 			'unpublish_date' => $unpublish_date,
-			'date_format'    => $this->date_format,
-			'time_format'    => $this->time_format,
 			'month_names'    => $this->get_month_names(),
 			'date_parts'     => $date_parts,
 			'date_units'     => array( 'aa', 'mm', 'jj', 'hh', 'mn' ),
