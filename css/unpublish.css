@@ -8,6 +8,11 @@
 .unpublish-timestamp-wrap select {
 	font-size: 12px;
 	padding: 1px;
+	background-color: #fff;
+	color: #32373c;
+	outline: none;
+	-webkit-transition: 0.05s border-color ease-in-out;
+	transition: 0.05s border-color ease-in-out;
 }
 
 #unpublish-mm {

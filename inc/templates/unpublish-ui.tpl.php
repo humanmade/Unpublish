@@ -50,6 +50,6 @@
 
 	<?php wp_nonce_field( 'unpublish', 'unpublish-nonce' ); ?>
 	<?php foreach ( $date_units as $unit ) : ?>
-		<input type="hidden" class="<?php echo sanitize_html_class( sprintf( 'unpublish-%s-curr', $unit ) ); ?>" value="<?php echo esc_attr( $date_parts[ $unit ] ); ?>" />
+		<input type="hidden" class="<?php echo sanitize_html_class( sprintf( 'unpublish-%s-orig', $unit ) ); ?>" value="<?php echo esc_attr( $date_parts[ $unit ] ); ?>" />
 	<?php endforeach; ?>
 </div>
