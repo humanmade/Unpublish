@@ -148,14 +148,34 @@ class Unpublish {
 		if ( ! current_user_can( 'edit_post', $post_id ) )
 			return;
 
-		if ( isset( $_POST[self::$supports_key] ) ) {
-			$timestamp = strtotime( $_POST[self::$supports_key] );
-			if ( ! empty( $timestamp ) )
-				update_post_meta( $post_id, self::$post_meta_key, $timestamp );
-			else
-				delete_post_meta( $post_id, self::$post_meta_key );
+		$units       = array( 'aa', 'mm', 'jj', 'hh', 'mn' );
+		$units_count = count( $units );
+		$date_parts  = [];
+
+		foreach ( $units as $unit ) {
+			$key = sprintf( 'unpublish-%s', $unit );
+			$date_parts[ $unit ] = $_POST[ $key ];
 		}
 
+		$date_parts = array_filter( $date_parts );
+
+		// The unpublish date has just been cleared.
+		if ( empty( $date_parts ) ) {
+			delete_post_meta( $post_id, self::$supports_key );
+			return;
+		}
+
+		// Bail if one of the fields is empty.
+		if ( count( $date_parts ) !== $units_count ) {
+			return;
+		}
+
+		$end_date   = vsprintf( '%04d-%02d-%02d %02d:%02d:00', $date_parts );
+		$valid_date = wp_checkdate( $date_parts['mm'], $date_parts['jj'], $date_parts['aa'], $end_date );
+
+		if ( $valid_date ) {
+			update_post_meta( $post_id, self::$supports_key, strtotime( $end_date ) );
+		}
 	}
 
 	/**
