@@ -41,6 +41,6 @@
 		$editLink.show();
 		hideFieldset();
 
-		// TODO: Save new values.
+		// TODO: Should we validate the date parts here?
 	});
 })( jQuery );
