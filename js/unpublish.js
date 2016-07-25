@@ -21,7 +21,12 @@
 		$editLink.show();
 		hideFieldset();
 
-		// TODO: Reset fields to current values.
+		$fieldset.find( ':input' ).each( function( i, input ) {
+			var $input     = $( input );
+			var currentVal = $( '.' + $input.attr( 'name' ) + '-curr' ).val();
+
+			$input.val( currentVal );
+		});
 	});
 
 	$( '.clear-unpublish-timestamp' ).on( 'click', function( e ) {
