@@ -137,6 +137,7 @@ class Unpublish {
 			'time_format'    => $this->time_format,
 			'month_names'    => $this->get_month_names(),
 			'date_parts'     => $date_parts,
+			'date_units'     => array( 'aa', 'mm', 'jj', 'hh', 'mn' ),
 		);
 
 		echo $this->get_view( 'unpublish-ui', $vars ); // xss ok

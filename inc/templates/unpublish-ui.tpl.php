@@ -49,4 +49,7 @@
 	</fieldset>
 
 	<input type="hidden" name="unpublish-nonce" value="<?php echo esc_attr( wp_create_nonce( 'unpublish' ) ); ?>" />
+	<?php foreach ( $date_units as $unit ) : ?>
+		<input type="hidden" class="<?php echo esc_attr( sprintf( 'unpublish-%s-curr', $unit ) ); ?>" value="<?php echo esc_attr( $date_parts[ $unit ] ); ?>" />
+	<?php endforeach; ?>
 </div>
