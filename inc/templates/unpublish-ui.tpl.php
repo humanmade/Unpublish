@@ -12,6 +12,14 @@
 				<span class="screen-reader-text"><?php esc_html_e( 'Month', 'unpublish' ); ?></span>
 				<select id="unpublish-mm" name="unpublish-mm">
 					<option value=""><?php esc_html_e( '&mdash;', 'unpublish' ); ?></option>
+						<?php foreach ( $month_names as $month ) : ?>
+							<?php printf(
+								'<option value="%s" data-text="%s">%s</option>',
+								esc_attr( $month['value'] ),
+								esc_attr( $month['text'] ),
+								esc_html( $month['label'] )
+							); ?>
+						<?php endforeach; ?>
 				</select>
 			</label>
 			<label>

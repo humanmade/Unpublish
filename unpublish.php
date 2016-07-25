@@ -81,6 +81,31 @@ class Unpublish {
 	}
 
 	/**
+	 *  Get month names
+	 *
+	 *  global WP_Locale $wp_locale
+	 *
+	 *  @return array Array of month names.
+	 */
+	protected function get_month_names() {
+		global $wp_locale;
+
+		$month_names = [];
+
+		for ( $i = 1; $i < 13; $i = $i + 1 ) {
+			$month_num     = zeroise( $i, 2 );
+			$month_text    = $wp_locale->get_month_abbrev( $wp_locale->get_month( $i ) );
+			$month_names[] = array(
+				'value' => $month_num,
+				'text'  => $month_text,
+				'label' => sprintf( _x( '%1$s-%2$s', 'month number-name', 'unpublish' ), $month_num, $month_text ),
+			);
+		}
+
+		return $month_names;
+	}
+
+	/**
 	 * Render the UI for changing the unpublish time of a post
 	 */
 	public function render_unpublish_ui() {
@@ -95,8 +120,10 @@ class Unpublish {
 			'unpublish_date' => $unpublish_date,
 			'date_format'    => $this->date_format,
 			'time_format'    => $this->time_format,
-			);
-		echo $this->get_view( 'unpublish-ui', $vars );
+			'month_names'    => $this->get_month_names(),
+		);
+
+		echo $this->get_view( 'unpublish-ui', $vars ); // xss ok
 	}
 
 	/**
