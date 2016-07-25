@@ -112,8 +112,9 @@ class Unpublish {
 
 		$unpublish_timestamp = get_post_meta( get_the_ID(), self::$post_meta_key, true );
 		if ( ! empty( $unpublish_timestamp ) ) {
-			$unpublish_date = date( $this->date_format . ' @ ' . $this->time_format, $unpublish_timestamp );
-			$date_parts     = array(
+			$datetime_format = sprintf( __( '%s @ %s', 'unpublish' ), $this->date_format, $this->time_format );
+			$unpublish_date  = date_i18n( $datetime_format, $unpublish_timestamp );
+			$date_parts      = array(
 				'jj' => date( 'd', $unpublish_timestamp ),
 				'mm' => date( 'm', $unpublish_timestamp ),
 				'aa' => date( 'Y', $unpublish_timestamp ),
