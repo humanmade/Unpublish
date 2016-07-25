@@ -104,6 +104,7 @@ class Unpublish {
 	 */
 	public function enqueue_scripts_styles() {
 		wp_enqueue_style( 'unpublish', plugins_url( 'css/unpublish.css', __FILE__ ), array(), '0.1-alpha' );
+		wp_enqueue_script( 'unpublish', plugins_url( 'js/unpublish.js', __FILE__ ), array( 'jquery' ), '0.1-alpha', true );
 	}
 
 	/**

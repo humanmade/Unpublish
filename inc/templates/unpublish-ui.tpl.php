@@ -5,7 +5,7 @@
 		<span class="screen-reader-text"><?php esc_html_e( 'Edit unpublish date and time', 'unpublish' ); ?></span>
 	</a>
 
-	<fieldset id="unpublish-timestampdiv">
+	<fieldset id="unpublish-timestampdiv" class="hide-if-js">
 		<legend class="screen-reader-text"><?php esc_html_e( 'Unpublish Date and time', 'unpublish' ); ?></legend>
 		<div class="unpublish-timestamp-wrap">
 			<label>
