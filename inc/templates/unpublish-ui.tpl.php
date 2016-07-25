@@ -14,9 +14,10 @@
 					<option value=""><?php esc_html_e( '&mdash;', 'unpublish' ); ?></option>
 						<?php foreach ( $month_names as $month ) : ?>
 							<?php printf(
-								'<option value="%s" data-text="%s">%s</option>',
+								'<option value="%s" data-text="%s"%s>%s</option>',
 								esc_attr( $month['value'] ),
 								esc_attr( $month['text'] ),
+								selected( $date_parts['mm'], $month['value'], false ),
 								esc_html( $month['label'] )
 							); ?>
 						<?php endforeach; ?>
@@ -24,20 +25,20 @@
 			</label>
 			<label>
 				<span class="screen-reader-text"><?php esc_html_e( 'Day', 'unpublish' ); ?></span>
-				<input id="unpublish-jj" name="unpublish-jj" size="2" maxlength="2" autocomplete="off" type="text" value="" />
+				<input id="unpublish-jj" name="unpublish-jj" size="2" maxlength="2" autocomplete="off" type="text" value="<?php echo esc_attr( $date_parts['jj'] ); ?>" />
 			</label>,<label>
 				<span class="screen-reader-text"><?php esc_html_e( 'Year', 'unpublish' ); ?></span>
-				<input id="unpublish-aa" name="unpublish-aa" size="4" maxlength="4" autocomplete="off" type="text" value="" />
+				<input id="unpublish-aa" name="unpublish-aa" size="4" maxlength="4" autocomplete="off" type="text" value="<?php echo esc_attr( $date_parts['aa'] ); ?>" />
 			</label>
 			@
 			<label>
 				<span class="screen-reader-text"><?php esc_html_e( 'Hour', 'unpublish' ); ?></span>
-				<input id="unpublish-hh" name="unpublish-hh" size="2" maxlength="2" autocomplete="off" type="text" value="" />
+				<input id="unpublish-hh" name="unpublish-hh" size="2" maxlength="2" autocomplete="off" type="text" value="<?php echo esc_attr( $date_parts['hh'] ); ?>" />
 			</label>
 			:
 			<label>
 				<span class="screen-reader-text"><?php esc_html_e( 'Minute', 'unpublish' ); ?></span>
-				<input id="unpublish-mn" name="unpublish-mn" size="2" maxlength="2" autocomplete="off" type="text" value="" />
+				<input id="unpublish-mn" name="unpublish-mn" size="2" maxlength="2" autocomplete="off" type="text" value="<?php echo esc_attr( $date_parts['mn'] ); ?>" />
 			</label>
 			<p>
 				<a href="#edit-unpublish-timestamp" class="save-unpublish-timestamp hide-if-no-js button"><?php esc_html_e( 'OK', 'unpublish' ); ?></a>

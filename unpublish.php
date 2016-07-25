@@ -113,8 +113,22 @@ class Unpublish {
 		$unpublish_timestamp = get_post_meta( get_the_ID(), self::$post_meta_key, true );
 		if ( ! empty( $unpublish_timestamp ) ) {
 			$unpublish_date = date( $this->date_format . ' @ ' . $this->time_format, $unpublish_timestamp );
+			$date_parts     = array(
+				'jj' => date( 'd', $unpublish_timestamp ),
+				'mm' => date( 'm', $unpublish_timestamp ),
+				'aa' => date( 'Y', $unpublish_timestamp ),
+				'hh' => date( 'H', $unpublish_timestamp ),
+				'mn' => date( 'i', $unpublish_timestamp ),
+			);
 		} else {
 			$unpublish_date = '&mdash;';
+			$date_parts     = array(
+				'jj' => '',
+				'mm' => '',
+				'aa' => '',
+				'hh' => '',
+				'mn' => '',
+			);
 		}
 
 		$vars = array(
@@ -122,6 +136,7 @@ class Unpublish {
 			'date_format'    => $this->date_format,
 			'time_format'    => $this->time_format,
 			'month_names'    => $this->get_month_names(),
+			'date_parts'     => $date_parts,
 		);
 
 		echo $this->get_view( 'unpublish-ui', $vars ); // xss ok
