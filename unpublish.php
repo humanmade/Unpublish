@@ -158,11 +158,13 @@ class Unpublish {
 			return;
 		}
 
-		if ( ! post_type_supports( get_post_type( $post_id ), self::$supports_key ) )
+		if ( ! post_type_supports( get_post_type( $post_id ), self::$supports_key ) ) {
 			return;
+		}
 
-		if ( ! current_user_can( 'edit_post', $post_id ) )
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
 			return;
+		}
 
 		$units       = array( 'aa', 'mm', 'jj', 'hh', 'mn' );
 		$units_count = count( $units );
@@ -235,33 +237,34 @@ class Unpublish {
 
 	/**
 	 * Get a given view (if it exists)
-	 * 
+	 *
 	 * @param string     $view      The slug of the view
 	 * @return string
 	 */
 	public function get_view( $view, $vars = array() ) {
 
-		if ( isset( $this->template_dir ) )
+		if ( isset( $this->template_dir ) ) {
 			$template_dir = $this->template_dir;
-		else
+		} else {
 			$template_dir = $this->plugin_dir . '/inc/templates/';
+		}
 
 		$view_file = $template_dir . $view . '.tpl.php';
-		if ( ! file_exists( $view_file ) )
+		if ( ! file_exists( $view_file ) ) {
 			return '';
+		}
 
 		extract( $vars, EXTR_SKIP );
 		ob_start();
 		include $view_file;
 		return ob_get_clean();
 	}
-
 }
 
 /**
  * Load the plugin
  */
-function Unpublish() {
+function unpublish() {
 	return Unpublish::get_instance();
 }
-add_action( 'plugins_loaded', 'Unpublish' );
+add_action( 'plugins_loaded', 'unpublish' );
