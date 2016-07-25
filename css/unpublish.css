@@ -1,0 +1,24 @@
+#unpublish-timestamp:before {
+	color: #82878c;
+	top: -1px;
+	margin-right: .25em;
+}
+
+.unpublish-timestamp-wrap input,
+.unpublish-timestamp-wrap select {
+	font-size: 12px;
+	padding: 1px;
+}
+
+#unpublish-mm {
+	height: 21px;
+	line-height: 14px;
+	padding: 0;
+	vertical-align: top;
+}
+
+#unpublish-jj,
+#unpublish-hh,
+#unpublish-mn {
+	width: 2em;
+}
