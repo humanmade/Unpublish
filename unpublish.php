@@ -112,7 +112,7 @@ class Unpublish {
 
 		$unpublish_timestamp = get_post_meta( get_the_ID(), self::$post_meta_key, true );
 		if ( ! empty( $unpublish_timestamp ) ) {
-			$unpublish_date = date( $this->date_format . ' ' . $this->time_format, $unpublish_timestamp );
+			$unpublish_date = date( $this->date_format . ' @ ' . $this->time_format, $unpublish_timestamp );
 		} else {
 			$unpublish_date = '&mdash;';
 		}
