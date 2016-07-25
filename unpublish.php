@@ -162,7 +162,7 @@ class Unpublish {
 
 		// The unpublish date has just been cleared.
 		if ( empty( $date_parts ) ) {
-			delete_post_meta( $post_id, self::$supports_key );
+			delete_post_meta( $post_id, self::$post_meta_key );
 			return;
 		}
 
@@ -175,7 +175,7 @@ class Unpublish {
 		$valid_date     = wp_checkdate( $date_parts['mm'], $date_parts['jj'], $date_parts['aa'], $unpublish_date );
 
 		if ( $valid_date ) {
-			update_post_meta( $post_id, self::$supports_key, strtotime( $unpublish_date ) );
+			update_post_meta( $post_id, self::$post_meta_key, strtotime( $unpublish_date ) );
 		}
 	}
 
