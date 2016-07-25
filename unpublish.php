@@ -111,10 +111,11 @@ class Unpublish {
 	public function render_unpublish_ui() {
 
 		$unpublish_timestamp = get_post_meta( get_the_ID(), self::$post_meta_key, true );
-		if ( ! empty( $unpublish_timestamp ) )
+		if ( ! empty( $unpublish_timestamp ) ) {
 			$unpublish_date = date( $this->date_format . ' ' . $this->time_format, $unpublish_timestamp );
-		else
-			$unpublish_date = '';
+		} else {
+			$unpublish_date = '&mdash;';
+		}
 
 		$vars = array(
 			'unpublish_date' => $unpublish_date,

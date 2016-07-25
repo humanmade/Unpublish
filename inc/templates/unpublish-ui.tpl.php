@@ -1,5 +1,5 @@
 <div class="misc-pub-section endtime misc-pub-endtime">
-	<span id="unpublish-timestamp" class="dashicons-before dashicons-calendar-alt"><?php printf( __( 'Unpublish on: <strong>%s</strong>', 'unpublish' ), '&mdash;' ); ?></span>
+	<span id="unpublish-timestamp" class="dashicons-before dashicons-calendar-alt"><?php printf( __( 'Unpublish on: <strong>%s</strong>', 'unpublish' ), $unpublish_date ); // xss ok ?></span>
 	<a href="#edit-unpublish-timestamp" class="edit-unpublish-timestamp hide-if-no-js">
 		<span aria-hidden="true"><?php esc_html_e( 'Edit', 'unpublish' ); ?></span>
 		<span class="screen-reader-text"><?php esc_html_e( 'Edit unpublish date and time', 'unpublish' ); ?></span>
