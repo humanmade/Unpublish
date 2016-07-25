@@ -171,11 +171,11 @@ class Unpublish {
 			return;
 		}
 
-		$end_date   = vsprintf( '%04d-%02d-%02d %02d:%02d:00', $date_parts );
-		$valid_date = wp_checkdate( $date_parts['mm'], $date_parts['jj'], $date_parts['aa'], $end_date );
+		$unpublish_date = vsprintf( '%04d-%02d-%02d %02d:%02d:00', $date_parts );
+		$valid_date     = wp_checkdate( $date_parts['mm'], $date_parts['jj'], $date_parts['aa'], $unpublish_date );
 
 		if ( $valid_date ) {
-			update_post_meta( $post_id, self::$supports_key, strtotime( $end_date ) );
+			update_post_meta( $post_id, self::$supports_key, strtotime( $unpublish_date ) );
 		}
 	}
 
