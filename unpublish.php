@@ -158,7 +158,9 @@ class Unpublish {
 	 * Save the unpublish time for a given post
 	 */
 	public function action_save_unpublish_timestamp( $post_id ) {
-		check_admin_referer( 'unpublish', 'unpublish-nonce' );
+		if ( ! isset( $_POST['unpublish-nonce'] ) || ! wp_verify_nonce( $_POST['unpublish-nonce'], 'unpublish' ) ) {
+			return;
+		}
 
 		if ( ! post_type_supports( get_post_type( $post_id ), self::$supports_key ) ) {
 			return;
