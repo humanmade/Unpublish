@@ -112,14 +112,15 @@ class Unpublish {
 
 		$unpublish_timestamp = get_post_meta( get_the_ID(), self::$post_meta_key, true );
 		if ( ! empty( $unpublish_timestamp ) ) {
+			$local_timestamp = strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $unpublish_timestamp ) ) );
 			$datetime_format = sprintf( __( '%s @ %s', 'unpublish' ), $this->date_format, $this->time_format );
-			$unpublish_date  = date_i18n( $datetime_format, $unpublish_timestamp );
+			$unpublish_date  = date_i18n( $datetime_format, $local_timestamp );
 			$date_parts      = array(
-				'jj' => date( 'd', $unpublish_timestamp ),
-				'mm' => date( 'm', $unpublish_timestamp ),
-				'aa' => date( 'Y', $unpublish_timestamp ),
-				'hh' => date( 'H', $unpublish_timestamp ),
-				'mn' => date( 'i', $unpublish_timestamp ),
+				'jj' => date( 'd', $local_timestamp ),
+				'mm' => date( 'm', $local_timestamp ),
+				'aa' => date( 'Y', $local_timestamp ),
+				'hh' => date( 'H', $local_timestamp ),
+				'mn' => date( 'i', $local_timestamp ),
 			);
 		} else {
 			$unpublish_date = '&mdash;';
@@ -199,7 +200,7 @@ class Unpublish {
 			return;
 		}
 
-		$timestamp = strtotime( $unpublish_date );
+		$timestamp = strtotime( get_gmt_from_date( $unpublish_date ) );
 
 		update_post_meta( $post_id, self::$post_meta_key, $timestamp );
 		$this->schedule_unpublish( $post_id, $timestamp );
