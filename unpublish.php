@@ -13,7 +13,8 @@ Domain Path: /languages
 class Unpublish {
 
 	public static $supports_key = 'unpublish';
-	public static $cron_key = 'unpublish_cron';
+	public static $old_cron_key = 'unpublish_cron';
+	public static $cron_key = 'unpublish_post_cron';
 	public static $post_meta_key = 'unpublish_timestamp';
 
 	protected static $instance;
@@ -57,8 +58,9 @@ class Unpublish {
 
 		add_action( 'load-post.php', array( self::$instance, 'action_load_customizations' ) );
 		add_action( 'load-post-new.php', array( self::$instance, 'action_load_customizations' ) );
+		add_action( self::$cron_key, array( self::$instance, 'unpublish_post' ) );
 
-		if ( ! wp_next_scheduled( self::$cron_key ) ) {
+		if ( wp_next_scheduled( self::$old_cron_key ) ) {
 			$this->upgrade_scheduling();
 		}
 	}
@@ -69,8 +71,8 @@ class Unpublish {
 	 *  // TODO
 	 */
 	private function upgrade_scheduling() {
-		// wp_schedule_event( time(), $this->cron_frequency, self::$cron_key );
-		// add_action( self::$cron_key, array( self::$instance, 'unpublish_content' ) );
+		// wp_schedule_event( time(), $this->cron_frequency, self::$old_cron_key );
+		// add_action( self::$old_cron_key, array( self::$instance, 'unpublish_content' ) );
 	}
 
 	/**
@@ -202,9 +204,36 @@ class Unpublish {
 		$unpublish_date = vsprintf( '%04d-%02d-%02d %02d:%02d:00', $date_parts );
 		$valid_date     = wp_checkdate( $date_parts['mm'], $date_parts['jj'], $date_parts['aa'], $unpublish_date );
 
-		if ( $valid_date ) {
-			update_post_meta( $post_id, self::$post_meta_key, strtotime( $unpublish_date ) );
+		if ( ! $valid_date ) {
+			return;
 		}
+
+		$timestamp = strtotime( $unpublish_date );
+
+		update_post_meta( $post_id, self::$post_meta_key, $timestamp );
+		$this->schedule_unpublish( $post_id, $timestamp );
+	}
+
+	/**
+	 * Unpublish post
+	 *
+	 * Invoked by cron 'unpublish_post_cron' event.
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public function unpublish_post( $post_id ) {
+		wp_trash_post( $post_id );
+	}
+
+	/**
+	 *  Schedule unpublishing post
+	 *
+	 *  @param  int $post_id   Post ID.
+	 *  @param  int $timestamp Timestamp.
+	 */
+	public function schedule_unpublish( $post_id, $timestamp ) {
+		wp_clear_scheduled_hook( self::$cron_key, array( $post_id ) );
+		wp_schedule_single_event( $timestamp, self::$cron_key, array( $post_id ) );
 	}
 
 	/**
