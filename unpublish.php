@@ -24,9 +24,10 @@ class Unpublish {
 		if ( empty( self::$instance ) ) {
 			self::$instance = new Unpublish;
 			// Standard setup methods
-			foreach( array( 'setup_variables', 'includes', 'setup_actions' ) as $method ) {
-				if ( method_exists( self::$instance, $method ) )
+			foreach ( array( 'setup_variables', 'includes', 'setup_actions' ) as $method ) {
+				if ( method_exists( self::$instance, $method ) ) {
 					self::$instance->$method();
+				}
 			}
 		}
 		return self::$instance;
@@ -233,9 +234,10 @@ class Unpublish {
 		global $_wp_post_type_features;
 
 		$post_types = array();
-		foreach( $_wp_post_type_features as $post_type => $features ) {
-			if ( ! empty( $features[self::$supports_key] ) )
-				$post_types[]= $post_type;
+		foreach ( $_wp_post_type_features as $post_type => $features ) {
+			if ( ! empty( $features[ self::$supports_key ] ) ) {
+				$post_types[] = $post_type;
+			}
 		}
 
 		$args = array(
@@ -249,14 +251,14 @@ class Unpublish {
 					'meta_value'  => current_time( 'timestamp' ),
 					'compare'     => '<',
 					'type'        => 'NUMERIC',
-					),
+				),
 				array(
 					'meta_key'    => self::$post_meta_key,
 					'meta_value'  => current_time( 'timestamp' ),
 					'compare'     => 'EXISTS',
-					)
-				)
-			);
+				),
+			),
+		);
 		$query = new WP_Query( $args );
 
 		if ( $query->have_posts() ) {
