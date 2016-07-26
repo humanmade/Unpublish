@@ -59,11 +59,18 @@ class Unpublish {
 		add_action( 'load-post-new.php', array( self::$instance, 'action_load_customizations' ) );
 
 		if ( ! wp_next_scheduled( self::$cron_key ) ) {
-			wp_schedule_event( time(), $this->cron_frequency, self::$cron_key );
+			$this->upgrade_scheduling();
 		}
+	}
 
-		add_action( self::$cron_key, array( self::$instance, 'unpublish_content' ) );
-
+	/**
+	 *  Upgrade scheduling
+	 *
+	 *  // TODO
+	 */
+	private function upgrade_scheduling() {
+		// wp_schedule_event( time(), $this->cron_frequency, self::$cron_key );
+		// add_action( self::$cron_key, array( self::$instance, 'unpublish_content' ) );
 	}
 
 	/**
