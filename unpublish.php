@@ -74,9 +74,35 @@ class Unpublish {
 		$post_type = get_current_screen()->post_type;
 		if ( post_type_supports( $post_type, self::$supports_key ) ) {
 			add_action( 'post_submitbox_misc_actions', array( self::$instance, 'render_unpublish_ui' ) );
-			add_action( 'save_' . $post_type, array( self::$instance, 'action_save_unpublish_timestamp' ) );
+			add_action( 'admin_enqueue_scripts', array( self::$instance, 'enqueue_scripts_styles' ) );
+			add_action( 'save_post_' . $post_type, array( self::$instance, 'action_save_unpublish_timestamp' ) );
 		}
 
+	}
+
+	/**
+	 *  Get month names
+	 *
+	 *  global WP_Locale $wp_locale
+	 *
+	 *  @return array Array of month names.
+	 */
+	protected function get_month_names() {
+		global $wp_locale;
+
+		$month_names = [];
+
+		for ( $i = 1; $i < 13; $i = $i + 1 ) {
+			$month_num     = zeroise( $i, 2 );
+			$month_text    = $wp_locale->get_month_abbrev( $wp_locale->get_month( $i ) );
+			$month_names[] = array(
+				'value' => $month_num,
+				'text'  => $month_text,
+				'label' => sprintf( _x( '%1$s-%2$s', 'month number-name', 'unpublish' ), $month_num, $month_text ),
+			);
+		}
+
+		return $month_names;
 	}
 
 	/**
@@ -85,38 +111,93 @@ class Unpublish {
 	public function render_unpublish_ui() {
 
 		$unpublish_timestamp = get_post_meta( get_the_ID(), self::$post_meta_key, true );
-		if ( ! empty( $unpublish_timestamp ) )
-			$unpublish_date = date( $this->date_format . ' ' . $this->time_format, $unpublish_timestamp );
-		else
-			$unpublish_date = '';
+		if ( ! empty( $unpublish_timestamp ) ) {
+			$datetime_format = sprintf( __( '%s @ %s', 'unpublish' ), $this->date_format, $this->time_format );
+			$unpublish_date  = date_i18n( $datetime_format, $unpublish_timestamp );
+			$date_parts      = array(
+				'jj' => date( 'd', $unpublish_timestamp ),
+				'mm' => date( 'm', $unpublish_timestamp ),
+				'aa' => date( 'Y', $unpublish_timestamp ),
+				'hh' => date( 'H', $unpublish_timestamp ),
+				'mn' => date( 'i', $unpublish_timestamp ),
+			);
+		} else {
+			$unpublish_date = '&mdash;';
+			$date_parts     = array(
+				'jj' => '',
+				'mm' => '',
+				'aa' => '',
+				'hh' => '',
+				'mn' => '',
+			);
+		}
 
 		$vars = array(
 			'unpublish_date' => $unpublish_date,
-			'date_format'    => $this->date_format,
-			'time_format'    => $this->time_format,
-			);
-		echo $this->get_view( 'unpublish-ui', $vars );
+			'month_names'    => $this->get_month_names(),
+			'date_parts'     => $date_parts,
+			'date_units'     => array( 'aa', 'mm', 'jj', 'hh', 'mn' ),
+		);
+
+		echo $this->get_view( 'unpublish-ui', $vars ); // xss ok
+	}
+
+	/**
+	 *  Enqueue scripts & styles
+	 */
+	public function enqueue_scripts_styles() {
+		wp_enqueue_style( 'unpublish', plugins_url( 'css/unpublish.css', __FILE__ ), array(), '0.1-alpha' );
+		wp_enqueue_script( 'unpublish', plugins_url( 'js/unpublish.js', __FILE__ ), array( 'jquery' ), '0.1-alpha', true );
+		wp_localize_script( 'unpublish', 'unpublish', array(
+			/* translators: 1: month, 2: day, 3: year, 4: hour, 5: minute */
+			'dateFormat' => __( '%1$s %2$s, %3$s @ %4$s:%5$s', 'unpublish' ),
+		) );
 	}
 
 	/**
 	 * Save the unpublish time for a given post
 	 */
 	public function action_save_unpublish_timestamp( $post_id ) {
-
-		if ( ! post_type_supports( get_post_type( $post_id ), self::$supports_key ) )
+		if ( ! isset( $_POST['unpublish-nonce'] ) || ! wp_verify_nonce( $_POST['unpublish-nonce'], 'unpublish' ) ) {
 			return;
-
-		if ( ! current_user_can( 'edit_post', $post_id ) )
-			return;
-
-		if ( isset( $_POST[self::$supports_key] ) ) {
-			$timestamp = strtotime( $_POST[self::$supports_key] );
-			if ( ! empty( $timestamp ) )
-				update_post_meta( $post_id, self::$post_meta_key, $timestamp );
-			else
-				delete_post_meta( $post_id, self::$post_meta_key );
 		}
 
+		if ( ! post_type_supports( get_post_type( $post_id ), self::$supports_key ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+
+		$units       = array( 'aa', 'mm', 'jj', 'hh', 'mn' );
+		$units_count = count( $units );
+		$date_parts  = [];
+
+		foreach ( $units as $unit ) {
+			$key = sprintf( 'unpublish-%s', $unit );
+			$date_parts[ $unit ] = $_POST[ $key ];
+		}
+
+		$date_parts = array_filter( $date_parts );
+
+		// The unpublish date has just been cleared.
+		if ( empty( $date_parts ) ) {
+			delete_post_meta( $post_id, self::$post_meta_key );
+			return;
+		}
+
+		// Bail if one of the fields is empty.
+		if ( count( $date_parts ) !== $units_count ) {
+			return;
+		}
+
+		$unpublish_date = vsprintf( '%04d-%02d-%02d %02d:%02d:00', $date_parts );
+		$valid_date     = wp_checkdate( $date_parts['mm'], $date_parts['jj'], $date_parts['aa'], $unpublish_date );
+
+		if ( $valid_date ) {
+			update_post_meta( $post_id, self::$post_meta_key, strtotime( $unpublish_date ) );
+		}
 	}
 
 	/**
@@ -160,33 +241,34 @@ class Unpublish {
 
 	/**
 	 * Get a given view (if it exists)
-	 * 
+	 *
 	 * @param string     $view      The slug of the view
 	 * @return string
 	 */
 	public function get_view( $view, $vars = array() ) {
 
-		if ( isset( $this->template_dir ) )
+		if ( isset( $this->template_dir ) ) {
 			$template_dir = $this->template_dir;
-		else
+		} else {
 			$template_dir = $this->plugin_dir . '/inc/templates/';
+		}
 
 		$view_file = $template_dir . $view . '.tpl.php';
-		if ( ! file_exists( $view_file ) )
+		if ( ! file_exists( $view_file ) ) {
 			return '';
+		}
 
 		extract( $vars, EXTR_SKIP );
 		ob_start();
 		include $view_file;
 		return ob_get_clean();
 	}
-
 }
 
 /**
  * Load the plugin
  */
-function Unpublish() {
+function unpublish() {
 	return Unpublish::get_instance();
 }
-add_action( 'plugins_loaded', 'Unpublish' );
+add_action( 'plugins_loaded', 'unpublish' );
