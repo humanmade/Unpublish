@@ -61,18 +61,8 @@ class Unpublish {
 		add_action( self::$cron_key, array( self::$instance, 'unpublish_post' ) );
 
 		if ( wp_next_scheduled( self::$old_cron_key ) ) {
-			$this->upgrade_scheduling();
+			add_action( self::$old_cron_key, array( self::$instance, 'unpublish_content' ) );
 		}
-	}
-
-	/**
-	 *  Upgrade scheduling
-	 *
-	 *  // TODO
-	 */
-	private function upgrade_scheduling() {
-		// wp_schedule_event( time(), $this->cron_frequency, self::$old_cron_key );
-		// add_action( self::$old_cron_key, array( self::$instance, 'unpublish_content' ) );
 	}
 
 	/**
@@ -269,10 +259,14 @@ class Unpublish {
 			);
 		$query = new WP_Query( $args );
 
-		foreach( $query->posts as $post_id ) {
-			wp_trash_post( $post_id );
+		if ( $query->have_posts() ) {
+			foreach ( $query->posts as $post_id ) {
+				wp_trash_post( $post_id );
+			}
+		} else {
+			// There are no posts scheduled to unpublish, we can safely remove the old cron.
+			wp_clear_scheduled_hook( self::$old_cron_key );
 		}
-
 	}
 
 	/**
