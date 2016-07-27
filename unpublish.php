@@ -224,6 +224,13 @@ class Unpublish {
 	 * @param int $post_id Post ID.
 	 */
 	public function unpublish_post( $post_id ) {
+		$unpublish_timestamp = (int) $this->get_unpublish_timestamp( $post_id );
+
+		if ( $unpublish_timestamp > time() ) {
+			$this->schedule_unpublish( $post_id, $unpublish_timestamp );
+			return;
+		}
+
 		wp_trash_post( $post_id );
 	}
 
