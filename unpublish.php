@@ -106,11 +106,21 @@ class Unpublish {
 	}
 
 	/**
+	 *  Get post unpublish timestamp
+	 *
+	 *  @param  int    $post_id Post ID.
+	 *  @return string Timestamp.
+	 */
+	private function get_unpublish_timestamp( $post_id ) {
+		return get_post_meta( $post_id, self::$post_meta_key, true );
+	}
+
+	/**
 	 * Render the UI for changing the unpublish time of a post
 	 */
 	public function render_unpublish_ui() {
 
-		$unpublish_timestamp = get_post_meta( get_the_ID(), self::$post_meta_key, true );
+		$unpublish_timestamp = $this->get_unpublish_timestamp( get_the_ID() );
 		if ( ! empty( $unpublish_timestamp ) ) {
 			$local_timestamp = strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $unpublish_timestamp ) ) );
 			$datetime_format = sprintf( __( '%s @ %s', 'unpublish' ), $this->date_format, $this->time_format );
