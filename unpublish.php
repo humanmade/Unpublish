@@ -13,7 +13,7 @@ Domain Path: /languages
 class Unpublish {
 
 	public static $supports_key = 'unpublish';
-	public static $old_cron_key = 'unpublish_cron';
+	public static $deprecated_cron_key = 'unpublish_cron';
 	public static $cron_key = 'unpublish_post_cron';
 	public static $post_meta_key = 'unpublish_timestamp';
 
@@ -61,8 +61,8 @@ class Unpublish {
 		add_action( 'load-post-new.php', array( self::$instance, 'action_load_customizations' ) );
 		add_action( self::$cron_key, array( self::$instance, 'unpublish_post' ) );
 
-		if ( wp_next_scheduled( self::$old_cron_key ) ) {
-			add_action( self::$old_cron_key, array( self::$instance, 'unpublish_content' ) );
+		if ( wp_next_scheduled( self::$deprecated_cron_key ) ) {
+			add_action( self::$deprecated_cron_key, array( self::$instance, 'unpublish_content' ) );
 		}
 	}
 
@@ -268,7 +268,7 @@ class Unpublish {
 			}
 		} else {
 			// There are no posts scheduled to unpublish, we can safely remove the old cron.
-			wp_clear_scheduled_hook( self::$old_cron_key );
+			wp_clear_scheduled_hook( self::$deprecated_cron_key );
 		}
 	}
 
