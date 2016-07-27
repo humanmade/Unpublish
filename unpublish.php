@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Unpublish
-Version: 0.1-alpha
+Version: 1.0
 Description: Unpublish your content
 Author: Daniel Bachhuber, Human Made
 Author URI: http://hmn.md/
@@ -13,7 +13,8 @@ Domain Path: /languages
 class Unpublish {
 
 	public static $supports_key = 'unpublish';
-	public static $cron_key = 'unpublish_cron';
+	public static $deprecated_cron_key = 'unpublish_cron';
+	public static $cron_key = 'unpublish_post_cron';
 	public static $post_meta_key = 'unpublish_timestamp';
 
 	protected static $instance;
@@ -23,9 +24,10 @@ class Unpublish {
 		if ( empty( self::$instance ) ) {
 			self::$instance = new Unpublish;
 			// Standard setup methods
-			foreach( array( 'setup_variables', 'includes', 'setup_actions' ) as $method ) {
-				if ( method_exists( self::$instance, $method ) )
+			foreach ( array( 'setup_variables', 'includes', 'setup_actions' ) as $method ) {
+				if ( method_exists( self::$instance, $method ) ) {
 					self::$instance->$method();
+				}
 			}
 		}
 		return self::$instance;
@@ -57,13 +59,11 @@ class Unpublish {
 
 		add_action( 'load-post.php', array( self::$instance, 'action_load_customizations' ) );
 		add_action( 'load-post-new.php', array( self::$instance, 'action_load_customizations' ) );
+		add_action( self::$cron_key, array( self::$instance, 'unpublish_post' ) );
 
-		if ( ! wp_next_scheduled( self::$cron_key ) ) {
-			wp_schedule_event( time(), $this->cron_frequency, self::$cron_key );
+		if ( wp_next_scheduled( self::$deprecated_cron_key ) ) {
+			add_action( self::$deprecated_cron_key, array( self::$instance, 'unpublish_content' ) );
 		}
-
-		add_action( self::$cron_key, array( self::$instance, 'unpublish_content' ) );
-
 	}
 
 	/**
@@ -106,20 +106,31 @@ class Unpublish {
 	}
 
 	/**
+	 *  Get post unpublish timestamp
+	 *
+	 *  @param  int    $post_id Post ID.
+	 *  @return string Timestamp.
+	 */
+	private function get_unpublish_timestamp( $post_id ) {
+		return get_post_meta( $post_id, self::$post_meta_key, true );
+	}
+
+	/**
 	 * Render the UI for changing the unpublish time of a post
 	 */
 	public function render_unpublish_ui() {
 
-		$unpublish_timestamp = get_post_meta( get_the_ID(), self::$post_meta_key, true );
+		$unpublish_timestamp = $this->get_unpublish_timestamp( get_the_ID() );
 		if ( ! empty( $unpublish_timestamp ) ) {
+			$local_timestamp = strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $unpublish_timestamp ) ) );
 			$datetime_format = sprintf( __( '%s @ %s', 'unpublish' ), $this->date_format, $this->time_format );
-			$unpublish_date  = date_i18n( $datetime_format, $unpublish_timestamp );
+			$unpublish_date  = date_i18n( $datetime_format, $local_timestamp );
 			$date_parts      = array(
-				'jj' => date( 'd', $unpublish_timestamp ),
-				'mm' => date( 'm', $unpublish_timestamp ),
-				'aa' => date( 'Y', $unpublish_timestamp ),
-				'hh' => date( 'H', $unpublish_timestamp ),
-				'mn' => date( 'i', $unpublish_timestamp ),
+				'jj' => date( 'd', $local_timestamp ),
+				'mm' => date( 'm', $local_timestamp ),
+				'aa' => date( 'Y', $local_timestamp ),
+				'hh' => date( 'H', $local_timestamp ),
+				'mn' => date( 'i', $local_timestamp ),
 			);
 		} else {
 			$unpublish_date = '&mdash;';
@@ -195,9 +206,43 @@ class Unpublish {
 		$unpublish_date = vsprintf( '%04d-%02d-%02d %02d:%02d:00', $date_parts );
 		$valid_date     = wp_checkdate( $date_parts['mm'], $date_parts['jj'], $date_parts['aa'], $unpublish_date );
 
-		if ( $valid_date ) {
-			update_post_meta( $post_id, self::$post_meta_key, strtotime( $unpublish_date ) );
+		if ( ! $valid_date ) {
+			return;
 		}
+
+		$timestamp = strtotime( get_gmt_from_date( $unpublish_date ) );
+
+		update_post_meta( $post_id, self::$post_meta_key, $timestamp );
+		$this->schedule_unpublish( $post_id, $timestamp );
+	}
+
+	/**
+	 * Unpublish post
+	 *
+	 * Invoked by cron 'unpublish_post_cron' event.
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public function unpublish_post( $post_id ) {
+		$unpublish_timestamp = (int) $this->get_unpublish_timestamp( $post_id );
+
+		if ( $unpublish_timestamp > time() ) {
+			$this->schedule_unpublish( $post_id, $unpublish_timestamp );
+			return;
+		}
+
+		wp_trash_post( $post_id );
+	}
+
+	/**
+	 *  Schedule unpublishing post
+	 *
+	 *  @param  int $post_id   Post ID.
+	 *  @param  int $timestamp Timestamp.
+	 */
+	public function schedule_unpublish( $post_id, $timestamp ) {
+		wp_clear_scheduled_hook( self::$cron_key, array( $post_id ) );
+		wp_schedule_single_event( $timestamp, self::$cron_key, array( $post_id ) );
 	}
 
 	/**
@@ -207,9 +252,10 @@ class Unpublish {
 		global $_wp_post_type_features;
 
 		$post_types = array();
-		foreach( $_wp_post_type_features as $post_type => $features ) {
-			if ( ! empty( $features[self::$supports_key] ) )
-				$post_types[]= $post_type;
+		foreach ( $_wp_post_type_features as $post_type => $features ) {
+			if ( ! empty( $features[ self::$supports_key ] ) ) {
+				$post_types[] = $post_type;
+			}
 		}
 
 		$args = array(
@@ -223,20 +269,24 @@ class Unpublish {
 					'meta_value'  => current_time( 'timestamp' ),
 					'compare'     => '<',
 					'type'        => 'NUMERIC',
-					),
+				),
 				array(
 					'meta_key'    => self::$post_meta_key,
 					'meta_value'  => current_time( 'timestamp' ),
 					'compare'     => 'EXISTS',
-					)
-				)
-			);
+				),
+			),
+		);
 		$query = new WP_Query( $args );
 
-		foreach( $query->posts as $post_id ) {
-			wp_trash_post( $post_id );
+		if ( $query->have_posts() ) {
+			foreach ( $query->posts as $post_id ) {
+				wp_trash_post( $post_id );
+			}
+		} else {
+			// There are no posts scheduled to unpublish, we can safely remove the old cron.
+			wp_clear_scheduled_hook( self::$deprecated_cron_key );
 		}
-
 	}
 
 	/**
