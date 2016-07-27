@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Unpublish
-Version: 0.1-alpha
+Version: 1.0
 Description: Unpublish your content
 Author: Daniel Bachhuber, Human Made
 Author URI: http://hmn.md/
