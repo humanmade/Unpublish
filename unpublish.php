@@ -59,6 +59,8 @@ class Unpublish {
 
 		add_action( 'load-post.php', array( self::$instance, 'action_load_customizations' ) );
 		add_action( 'load-post-new.php', array( self::$instance, 'action_load_customizations' ) );
+		add_action( 'added_post_meta', array( self::$instance, 'update_schedule' ), 10, 4 );
+		add_action( 'updated_post_meta', array( self::$instance, 'update_schedule' ), 10, 4 );
 		add_action( self::$cron_key, array( self::$instance, 'unpublish_post' ) );
 
 		if ( wp_next_scheduled( self::$deprecated_cron_key ) ) {
@@ -166,6 +168,26 @@ class Unpublish {
 	}
 
 	/**
+	 * Add schedule
+	 *
+	 * @param int    $meta_id    ID of updated metadata entry.
+	 * @param int    $object_id  Object ID.
+	 * @param string $meta_key   Meta key.
+	 * @param mixed  $meta_value Meta value.
+	 */
+	public function update_schedule( $meta_id, $object_id, $meta_key, $meta_value ) {
+		if ( self::$post_meta_key !== $meta_key ) {
+			return;
+		}
+
+		if ( $meta_value ) {
+			$this->schedule_unpublish( $object_id, $meta_value );
+		} else {
+			wp_clear_scheduled_hook( self::$cron_key, array( $object_id ) );
+		}
+	}
+
+	/**
 	 * Save the unpublish time for a given post
 	 */
 	public function action_save_unpublish_timestamp( $post_id ) {
@@ -213,7 +235,6 @@ class Unpublish {
 		$timestamp = strtotime( get_gmt_from_date( $unpublish_date ) );
 
 		update_post_meta( $post_id, self::$post_meta_key, $timestamp );
-		$this->schedule_unpublish( $post_id, $timestamp );
 	}
 
 	/**
