@@ -45,10 +45,6 @@ class Unpublish {
 		$this->basename       = plugin_basename( $this->file );
 		$this->plugin_dir     = plugin_dir_path( $this->file );
 		$this->plugin_url     = plugin_dir_url( $this->file );
-
-		$this->date_format    = get_option( 'date_format' );
-		$this->time_format    = get_option( 'time_format' );
-
 		$this->cron_frequency = 'twicedaily';
 	}
 
@@ -128,7 +124,7 @@ class Unpublish {
 		$unpublish_timestamp = $this->get_unpublish_timestamp( get_the_ID() );
 		if ( ! empty( $unpublish_timestamp ) ) {
 			$local_timestamp = strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $unpublish_timestamp ) ) );
-			$datetime_format = sprintf( __( '%s @ %s', 'unpublish' ), $this->date_format, $this->time_format );
+			$datetime_format = __( 'M j, Y @ H:i', 'unpublish' );
 			$unpublish_date  = date_i18n( $datetime_format, $local_timestamp );
 			$date_parts      = array(
 				'jj' => date( 'd', $local_timestamp ),
