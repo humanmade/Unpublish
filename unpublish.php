@@ -184,7 +184,7 @@ class Unpublish {
 		if ( $meta_value ) {
 			$this->schedule_unpublish( $object_id, $meta_value );
 		} else {
-			wp_clear_scheduled_hook( self::$cron_key, array( $object_id ) );
+			$this->unschedule_unpublish( $object_id );
 		}
 	}
 
@@ -197,7 +197,7 @@ class Unpublish {
 	 */
 	public function remove_schedule( $meta_ids, $object_id, $meta_key ) {
 		if ( self::$post_meta_key === $meta_key ) {
-			wp_clear_scheduled_hook( self::$cron_key, array( $object_id ) );
+			$this->unschedule_unpublish( $object_id );
 		}
 	}
 
@@ -270,13 +270,22 @@ class Unpublish {
 	}
 
 	/**
+	 * Unschedule unpublishing post
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public function unschedule_unpublish( $post_id ) {
+		wp_clear_scheduled_hook( self::$cron_key, array( $post_id ) );
+	}
+
+	/**
 	 *  Schedule unpublishing post
 	 *
 	 *  @param  int $post_id   Post ID.
 	 *  @param  int $timestamp Timestamp.
 	 */
 	public function schedule_unpublish( $post_id, $timestamp ) {
-		wp_clear_scheduled_hook( self::$cron_key, array( $post_id ) );
+		$this->unschedule_unpublish( $post_id );
 		wp_schedule_single_event( $timestamp, self::$cron_key, array( $post_id ) );
 	}
 
