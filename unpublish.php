@@ -63,6 +63,7 @@ class Unpublish {
 		add_action( 'updated_post_meta', array( self::$instance, 'update_schedule' ), 10, 4 );
 		add_action( 'deleted_post_meta', array( self::$instance, 'remove_schedule' ), 10, 3 );
 		add_action( 'trashed_post', array( self::$instance, 'unschedule_unpublish' ) );
+		add_action( 'untrashed_post', array( self::$instance, 'reschedule_unpublish' ) );
 		add_action( self::$cron_key, array( self::$instance, 'unpublish_post' ) );
 
 		if ( wp_next_scheduled( self::$deprecated_cron_key ) ) {
@@ -288,6 +289,19 @@ class Unpublish {
 	public function schedule_unpublish( $post_id, $timestamp ) {
 		$this->unschedule_unpublish( $post_id );
 		wp_schedule_single_event( $timestamp, self::$cron_key, array( $post_id ) );
+	}
+
+	/**
+	 * Reschedule unpublishing post
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public function reschedule_unpublish( $post_id ) {
+		$timestamp = $this->get_unpublish_timestamp( $post_id );
+
+		if ( $timestamp ) {
+			$this->schedule_unpublish( $post_id, $timestamp );
+		}
 	}
 
 	/**
