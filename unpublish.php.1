@@ -59,10 +59,10 @@ class Unpublish {
 
 		add_action( 'load-post.php', array( self::$instance, 'action_load_customizations' ) );
 		add_action( 'load-post-new.php', array( self::$instance, 'action_load_customizations' ) );
+		add_action( self::$cron_key, array( self::$instance, 'unpublish_post' ) );
 		add_action( 'added_post_meta', array( self::$instance, 'update_schedule' ), 10, 4 );
 		add_action( 'updated_post_meta', array( self::$instance, 'update_schedule' ), 10, 4 );
 		add_action( 'deleted_post_meta', array( self::$instance, 'remove_schedule' ), 10, 3 );
-		add_action( self::$cron_key, array( self::$instance, 'unpublish_post' ) );
 
 		if ( wp_next_scheduled( self::$deprecated_cron_key ) ) {
 			add_action( self::$deprecated_cron_key, array( self::$instance, 'unpublish_content' ) );
@@ -195,7 +195,7 @@ class Unpublish {
 	 * @param int    $object_id  Object ID.
 	 * @param string $meta_key   Meta key.
 	 */
-	public function remove_schedule( $meta_ids, $object_id, $meta_key ) {
+	public function remove_schedule( $meta_id, $object_id, $meta_key ) {
 		if ( self::$post_meta_key === $meta_key ) {
 			wp_clear_scheduled_hook( self::$cron_key, array( $object_id ) );
 		}
