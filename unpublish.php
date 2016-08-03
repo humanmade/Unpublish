@@ -45,10 +45,6 @@ class Unpublish {
 		$this->basename       = plugin_basename( $this->file );
 		$this->plugin_dir     = plugin_dir_path( $this->file );
 		$this->plugin_url     = plugin_dir_url( $this->file );
-
-		$this->date_format    = get_option( 'date_format' );
-		$this->time_format    = get_option( 'time_format' );
-
 		$this->cron_frequency = 'twicedaily';
 	}
 
@@ -59,6 +55,11 @@ class Unpublish {
 
 		add_action( 'load-post.php', array( self::$instance, 'action_load_customizations' ) );
 		add_action( 'load-post-new.php', array( self::$instance, 'action_load_customizations' ) );
+		add_action( 'added_post_meta', array( self::$instance, 'update_schedule' ), 10, 4 );
+		add_action( 'updated_post_meta', array( self::$instance, 'update_schedule' ), 10, 4 );
+		add_action( 'deleted_post_meta', array( self::$instance, 'remove_schedule' ), 10, 3 );
+		add_action( 'trashed_post', array( self::$instance, 'unschedule_unpublish' ) );
+		add_action( 'untrashed_post', array( self::$instance, 'reschedule_unpublish' ) );
 		add_action( self::$cron_key, array( self::$instance, 'unpublish_post' ) );
 
 		if ( wp_next_scheduled( self::$deprecated_cron_key ) ) {
@@ -123,7 +124,8 @@ class Unpublish {
 		$unpublish_timestamp = $this->get_unpublish_timestamp( get_the_ID() );
 		if ( ! empty( $unpublish_timestamp ) ) {
 			$local_timestamp = strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $unpublish_timestamp ) ) );
-			$datetime_format = sprintf( __( '%s @ %s', 'unpublish' ), $this->date_format, $this->time_format );
+			/* translators: Unpublish box date format, see https://secure.php.net/date */
+			$datetime_format = __( 'M j, Y @ H:i', 'unpublish' );
 			$unpublish_date  = date_i18n( $datetime_format, $local_timestamp );
 			$date_parts      = array(
 				'jj' => date( 'd', $local_timestamp ),
@@ -163,6 +165,39 @@ class Unpublish {
 			/* translators: 1: month, 2: day, 3: year, 4: hour, 5: minute */
 			'dateFormat' => __( '%1$s %2$s, %3$s @ %4$s:%5$s', 'unpublish' ),
 		) );
+	}
+
+	/**
+	 * Add schedule
+	 *
+	 * @param int    $meta_id    ID of updated metadata entry.
+	 * @param int    $object_id  Object ID.
+	 * @param string $meta_key   Meta key.
+	 * @param mixed  $meta_value Meta value.
+	 */
+	public function update_schedule( $meta_id, $object_id, $meta_key, $meta_value ) {
+		if ( self::$post_meta_key !== $meta_key ) {
+			return;
+		}
+
+		if ( $meta_value ) {
+			$this->schedule_unpublish( $object_id, $meta_value );
+		} else {
+			$this->unschedule_unpublish( $object_id );
+		}
+	}
+
+	/**
+	 * Remove schedule
+	 *
+	 * @param array  $meta_ids   An array of deleted metadata entry IDs.
+	 * @param int    $object_id  Object ID.
+	 * @param string $meta_key   Meta key.
+	 */
+	public function remove_schedule( $meta_ids, $object_id, $meta_key ) {
+		if ( self::$post_meta_key === $meta_key ) {
+			$this->unschedule_unpublish( $object_id );
+		}
 	}
 
 	/**
@@ -213,7 +248,6 @@ class Unpublish {
 		$timestamp = strtotime( get_gmt_from_date( $unpublish_date ) );
 
 		update_post_meta( $post_id, self::$post_meta_key, $timestamp );
-		$this->schedule_unpublish( $post_id, $timestamp );
 	}
 
 	/**
@@ -235,14 +269,36 @@ class Unpublish {
 	}
 
 	/**
+	 * Unschedule unpublishing post
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public function unschedule_unpublish( $post_id ) {
+		wp_clear_scheduled_hook( self::$cron_key, array( $post_id ) );
+	}
+
+	/**
 	 *  Schedule unpublishing post
 	 *
 	 *  @param  int $post_id   Post ID.
 	 *  @param  int $timestamp Timestamp.
 	 */
 	public function schedule_unpublish( $post_id, $timestamp ) {
-		wp_clear_scheduled_hook( self::$cron_key, array( $post_id ) );
+		$this->unschedule_unpublish( $post_id );
 		wp_schedule_single_event( $timestamp, self::$cron_key, array( $post_id ) );
+	}
+
+	/**
+	 * Reschedule unpublishing post
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public function reschedule_unpublish( $post_id ) {
+		$timestamp = $this->get_unpublish_timestamp( $post_id );
+
+		if ( $timestamp ) {
+			$this->schedule_unpublish( $post_id, $timestamp );
+		}
 	}
 
 	/**
