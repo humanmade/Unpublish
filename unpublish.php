@@ -124,6 +124,7 @@ class Unpublish {
 		$unpublish_timestamp = $this->get_unpublish_timestamp( get_the_ID() );
 		if ( ! empty( $unpublish_timestamp ) ) {
 			$local_timestamp = strtotime( get_date_from_gmt( date( 'Y-m-d H:i:s', $unpublish_timestamp ) ) );
+			/* translators: Unpublish box date format, see https://secure.php.net/date */
 			$datetime_format = __( 'M j, Y @ H:i', 'unpublish' );
 			$unpublish_date  = date_i18n( $datetime_format, $local_timestamp );
 			$date_parts      = array(
