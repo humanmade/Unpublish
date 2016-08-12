@@ -40,6 +40,6 @@ Yes, as long as you modify the code accordingly:
 
 Credits
 =======
-Created by [Human Made](https://hmn.md/) for high volume and large-scale sites. Thanks to all our [contributors](https://github.com/humanmade/S3-Uploads/graphs/contributors).
+Created by [Human Made](https://hmn.md/) for high volume and large-scale sites. Thanks to all our [contributors](https://github.com/humanmade/Unpublish/graphs/contributors).
 
 Interested in joining in on the fun? [Join us, and become human!](https://hmn.md/is/hiring/)
