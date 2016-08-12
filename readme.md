@@ -2,7 +2,7 @@
 	<tr>
 		<td align="left" width="100%">
 			<strong>Unpublish</strong><br />
-			Adds a setting under *Publish* in the WordPress post editor screen to allow unpublishing a post at a given date.
+			Adds a setting under <strong>Publish</strong> in the WordPress post editor screen to allow unpublishing a post at a given date.
 		</td>
 	</tr>
 	<tr>
