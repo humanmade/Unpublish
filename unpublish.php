@@ -61,6 +61,7 @@ class Unpublish {
 		add_action( 'trashed_post', array( self::$instance, 'unschedule_unpublish' ) );
 		add_action( 'untrashed_post', array( self::$instance, 'reschedule_unpublish' ) );
 		add_action( self::$cron_key, array( self::$instance, 'unpublish_post' ) );
+		add_filter( 'is_protected_meta', array( self::$instance, 'protect_meta_key' ), 10, 3 );
 
 		if ( wp_next_scheduled( self::$deprecated_cron_key ) ) {
 			add_action( self::$deprecated_cron_key, array( self::$instance, 'unpublish_content' ) );
@@ -343,6 +344,23 @@ class Unpublish {
 			// There are no posts scheduled to unpublish, we can safely remove the old cron.
 			wp_clear_scheduled_hook( self::$deprecated_cron_key );
 		}
+	}
+
+	/**
+	 * Protect meta key so it doesn't show up on Custom Fields meta box
+	 *
+	 * @param bool   $protected Whether the key is protected. Default false.
+	 * @param string $meta_key  Meta key.
+	 * @param string $meta_type Meta type.
+	 *
+	 * @return bool
+	 */
+	public function protect_meta_key( $protected, $meta_key, $meta_type ) {
+		if ( $meta_key === self::$post_meta_key && 'post' === $meta_type ) {
+			$protected = true;
+		}
+
+		return $protected;
 	}
 
 	/**
