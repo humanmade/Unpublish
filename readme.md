@@ -38,6 +38,18 @@ Yes, as long as you modify the code accordingly:
 		add_post_type_support( $type, 'unpublish' );`
 	}
 
+Changelog
+=======
+
+= 1.2 =
+* Protect meta key
+
+= 1.1 =
+* Move unpublish field to appear immediatly below the publish date.
+* Alter schedule as post meta updates.
+* Match formatting of unpublish and publish time.
+* Ensure schedule is removed when posts are trashed.
+
 Credits
 =======
 Created by [Human Made](https://hmn.md/) for high volume and large-scale sites. Thanks to all our [contributors](https://github.com/humanmade/Unpublish/graphs/contributors).
