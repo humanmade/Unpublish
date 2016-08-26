@@ -38,8 +38,11 @@ Yes, as long as you modify the code accordingly:
 		add_post_type_support( $type, 'unpublish' );`
 	}
 
-Change log
+Changelog
 =======
+
+= 1.2 =
+* Protect meta key
 
 = 1.1 =
 * Move unpublish field to appear immediatly below the publish date.
