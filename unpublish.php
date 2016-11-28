@@ -286,7 +286,10 @@ class Unpublish {
 	 */
 	public function schedule_unpublish( $post_id, $timestamp ) {
 		$this->unschedule_unpublish( $post_id );
-		wp_schedule_single_event( $timestamp, self::$cron_key, array( $post_id ) );
+
+		if ( $timestamp > current_time( 'timestamp', true ) ) {
+			wp_schedule_single_event( $timestamp, self::$cron_key, array( $post_id ) );
+		}
 	}
 
 	/**
