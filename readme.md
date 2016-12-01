@@ -40,6 +40,8 @@ Yes, as long as you modify the code accordingly:
 
 Changelog
 =======
+= 1.3 =
+* Fix bug where unpublished posts can not be restored from trash. Props [ginaliao](https://github.com/ginaliao).
 
 = 1.2 =
 * Protect meta key
