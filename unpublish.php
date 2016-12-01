@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Unpublish
-Version: 1.2
+Version: 1.3
 Description: Unpublish your content
 Author: Human Made Ltd
 Author URI: http://hmn.md/
