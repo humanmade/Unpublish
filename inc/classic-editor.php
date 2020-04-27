@@ -5,9 +5,10 @@ declare( strict_types = 1 );
 namespace HM\Unpublish\Classic_Editor;
 
 use HM\Unpublish;
+use WP_Post;
 
 const ASSET_HANDLE = 'unpublish-classic-editor';
-const ASSET_VERSION = '2.0.0-alpha1';
+const NONCE_NAME = 'unpublish-nonce';
 
 function bootstrap() : void {
 	add_action( 'load-post.php', __NAMESPACE__ .  '\\attach_hooks' );
@@ -24,8 +25,9 @@ function attach_hooks() : void {
 		return;
 	}
 
-	add_action( 'post_submitbox_misc_actions', __NAMESPACE__ . '\\render_field', 1 );
 	add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets' );
+	add_action( 'post_submitbox_misc_actions', __NAMESPACE__ . '\\render_field', 1 );
+	add_action( 'save_post_' . $post_type, __NAMESPACE__ . '\\save_unpublish_timestamp', 10, 2 );
 }
 
 /**
@@ -134,7 +136,7 @@ function render_field() : void {
 		</div>
 	</fieldset>
 
-	<?php wp_nonce_field( 'unpublish', 'unpublish-nonce' ); ?>
+	<?php wp_nonce_field( 'unpublish', NONCE_NAME ); ?>
 	<?php foreach ( $date_units as $unit ) : ?>
 		<input type="hidden" class="<?php echo sanitize_html_class( sprintf( 'unpublish-%s-orig', $unit ) ); ?>" value="<?php echo esc_attr( $date_parts[ $unit ] ); ?>" />
 	<?php endforeach; ?>
@@ -150,13 +152,13 @@ function enqueue_scripts_styles() : void {
 		ASSET_HANDLE,
 		plugins_url( 'assets/dist/classic-editor.css', __FILE__ ),
 		[],
-		ASSET_VERSION
+		Unpublish\VERSION
 	);
 	wp_enqueue_script(
 		ASSET_HANDLE,
 		plugins_url( 'assets/dist/classic-editor.js', __FILE__ ),
 		[ 'jquery' ],
-		ASSET_VERSION,
+		Unpublish\VERSION,
 		true
 	);
 
@@ -166,3 +168,53 @@ function enqueue_scripts_styles() : void {
 	) );
 }
 
+/**
+ * Save the unpublish time for a given post
+ *
+ * @param int     $post_id Post ID.
+ * @param WP_Post $post Post object.
+ */
+function save_unpublish_timestamp( int $post_id, WP_Post $post ) : void {
+	if ( ! post_type_supports( $post->post_type, Unpublish\FEATURE_NAME ) ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		return;
+	}
+
+	check_admin_referer( NONCE_NAME, NONCE_NAME );
+
+	$units       = array( 'aa', 'mm', 'jj', 'hh', 'mn' );
+	$units_count = count( $units );
+	$date_parts  = [];
+
+	foreach ( $units as $unit ) {
+		$key = sprintf( 'unpublish-%s', $unit );
+		$date_parts[ $unit ] = $_POST[ $key ];
+	}
+
+	$date_parts = array_filter( $date_parts );
+
+	// The unpublish date has just been cleared.
+	if ( empty( $date_parts ) ) {
+		delete_post_meta( $post_id, Unpublish\POST_META_KEY );
+		return;
+	}
+
+	// Bail if one of the fields is empty.
+	if ( count( $date_parts ) !== $units_count ) {
+		return;
+	}
+
+	$unpublish_date = vsprintf( '%04d-%02d-%02d %02d:%02d:00', $date_parts );
+	$valid_date     = wp_checkdate( $date_parts['mm'], $date_parts['jj'], $date_parts['aa'], $unpublish_date );
+
+	if ( ! $valid_date ) {
+		return;
+	}
+
+	$timestamp = strtotime( get_gmt_from_date( $unpublish_date ) );
+
+	update_post_meta( $post_id, Unpublish\POST_META_KEY, $timestamp );
+}

@@ -7,6 +7,7 @@ namespace HM\Unpublish;
 const CRON_KEY = 'unpublish_post_cron';
 const FEATURE_NAME = 'unpublish';
 const POST_META_KEY = 'unpublish_timestamp';
+const VERSION = '2.0.0-alpha1';
 
 /**
  * Bootstrapper
