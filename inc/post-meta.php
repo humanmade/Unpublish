@@ -9,7 +9,7 @@ use HM\Unpublish;
 /**
  * Post Meta Bootstrapper
  */
-function boostrap() : void {
+function bootstrap() : void {
 	add_action( 'added_post_meta', __NAMESPACE__ . '\\update_schedule', 10, 4 );
 	add_action( 'updated_post_meta', __NAMESPACE__ . '\\update_schedule', 10, 4 );
 	add_action( 'deleted_post_meta', __NAMESPACE__ . '\\remove_schedule', 10, 3 );
