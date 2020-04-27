@@ -27,3 +27,21 @@ function bootstrap(): void {}
 function unschedule_unpublish( int $post_id ) {
 	return wp_clear_scheduled_hook( self::$cron_key, array( $post_id ) );
 }
+
+/**
+ *  Schedule unpublishing post
+ *
+ *  @param int $post_id   Post ID.
+ *  @param int $timestamp Timestamp.
+ *
+ * @return bool True if event successfully scheduled. False for failure.
+ */
+function schedule_unpublish( int $post_id, int $timestamp ) : bool {
+	unschedule_unpublish( $post_id );
+
+	if ( $timestamp > current_time( 'timestamp', true ) ) {
+		return wp_schedule_single_event( $timestamp, CRON_KEY, [ $post_id ] );
+	}
+
+	return false;
+}
