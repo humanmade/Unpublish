@@ -136,7 +136,7 @@ function render_field() : void {
 		</div>
 	</fieldset>
 
-	<?php wp_nonce_field( 'unpublish', NONCE_NAME ); ?>
+	<?php wp_nonce_field( NONCE_NAME, NONCE_NAME ); ?>
 	<?php foreach ( $date_units as $unit ) : ?>
 		<input type="hidden" class="<?php echo sanitize_html_class( sprintf( 'unpublish-%s-orig', $unit ) ); ?>" value="<?php echo esc_attr( $date_parts[ $unit ] ); ?>" />
 	<?php endforeach; ?>
