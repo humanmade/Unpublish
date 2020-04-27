@@ -13,7 +13,9 @@ const POST_META_KEY = 'unpublish_timestamp';
  *
  * @return void
  */
-function bootstrap(): void {}
+function bootstrap(): void {
+	add_action( 'untrashed_post', __NAMESPACE__ . '\\reschedule_unpublish' );
+}
 
 /**
  * Get unpublish timestamp
@@ -58,6 +60,24 @@ function schedule_unpublish( int $post_id, int $timestamp ) : bool {
 	}
 
 	return false;
+}
+
+/**
+ * Reschedule unpublish
+ *
+ * @param int $post_id Post ID.
+ *
+ * @return bool True if event successfully scheduled.
+ *              False for failure or there's no unpublish timestamp set.
+ */
+function reschedule_unpublish( int $post_id ) : bool {
+	$timestamp = get_unpublish_timestamp( $post_id );
+
+	if ( empty( $timestamp ) ) {
+		return false;
+	}
+
+	return schedule_unpublish( $post_id, $timestamp );
 }
 
 /**
