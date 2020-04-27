@@ -16,6 +16,20 @@ const POST_META_KEY = 'unpublish_timestamp';
 function bootstrap(): void {}
 
 /**
+ * Get unpublish timestamp
+ *
+ * @param int $post_id Post ID.
+ *
+ * @return int|null Unpublish timestamp if set. NULL otherwise.
+ */
+function get_unpublish_timestamp( int $post_id ) : ? int {
+	$value = get_post_meta( $post_id, POST_META_KEY, true );
+	$value = ! empty( $value ) ? absint( $value ) : null;
+
+	return $value;
+}
+
+/**
  * Unschedule unpublishing post
  *
  * @param int $post_id Post ID.
