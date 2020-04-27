@@ -31,7 +31,7 @@ function attach_hooks() : void {
  *
  *  @return array Array of month names.
  */
-function get_month_names() {
+function get_month_names() : array {
 	global $wp_locale;
 
 	$month_names = [];
@@ -52,7 +52,7 @@ function get_month_names() {
 /**
  * Render the UI for changing the unpublish time of a post
  */
-function render_field() {
+function render_field() : void {
 	$date_units = ['aa', 'mm', 'jj', 'hh', 'mn' ];
 	$month_names = get_month_names();
 	$unpublish_timestamp = Unpublish\get_unpublish_timestamp( get_the_ID() );
