@@ -147,7 +147,7 @@ function render_field() : void {
 /**
  *  Enqueue assets
  */
-function enqueue_scripts_styles() : void {
+function enqueue_assets() : void {
 	wp_enqueue_style(
 		ASSET_HANDLE,
 		plugins_url( 'assets/dist/classic-editor.css', __FILE__ ),
