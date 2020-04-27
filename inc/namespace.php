@@ -14,6 +14,7 @@ const POST_META_KEY = 'unpublish_timestamp';
  * @return void
  */
 function bootstrap(): void {
+	add_action( 'trashed_post', __NAMESPACE__ . '\\unschedule_unpublish' );
 	add_action( 'untrashed_post', __NAMESPACE__ . '\\reschedule_unpublish' );
 }
 
