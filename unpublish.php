@@ -55,17 +55,7 @@ class Unpublish {
 
 		add_action( 'load-post.php', array( self::$instance, 'action_load_customizations' ) );
 		add_action( 'load-post-new.php', array( self::$instance, 'action_load_customizations' ) );
-		add_action( 'added_post_meta', array( self::$instance, 'update_schedule' ), 10, 4 );
-		add_action( 'updated_post_meta', array( self::$instance, 'update_schedule' ), 10, 4 );
-		add_action( 'deleted_post_meta', array( self::$instance, 'remove_schedule' ), 10, 3 );
-		add_action( 'trashed_post', array( self::$instance, 'unschedule_unpublish' ) );
-		add_action( 'untrashed_post', array( self::$instance, 'reschedule_unpublish' ) );
 		add_action( self::$cron_key, array( self::$instance, 'unpublish_post' ) );
-		add_filter( 'is_protected_meta', array( self::$instance, 'protect_meta_key' ), 10, 3 );
-
-		if ( wp_next_scheduled( self::$deprecated_cron_key ) ) {
-			add_action( self::$deprecated_cron_key, array( self::$instance, 'unpublish_content' ) );
-		}
 	}
 
 	/**
@@ -105,16 +95,6 @@ class Unpublish {
 		}
 
 		return $month_names;
-	}
-
-	/**
-	 *  Get post unpublish timestamp
-	 *
-	 *  @param  int    $post_id Post ID.
-	 *  @return string Timestamp.
-	 */
-	private function get_unpublish_timestamp( $post_id ) {
-		return get_post_meta( $post_id, self::$post_meta_key, true );
 	}
 
 	/**
@@ -169,39 +149,6 @@ class Unpublish {
 	}
 
 	/**
-	 * Add schedule
-	 *
-	 * @param int    $meta_id    ID of updated metadata entry.
-	 * @param int    $object_id  Object ID.
-	 * @param string $meta_key   Meta key.
-	 * @param mixed  $meta_value Meta value.
-	 */
-	public function update_schedule( $meta_id, $object_id, $meta_key, $meta_value ) {
-		if ( self::$post_meta_key !== $meta_key ) {
-			return;
-		}
-
-		if ( $meta_value ) {
-			$this->schedule_unpublish( $object_id, $meta_value );
-		} else {
-			$this->unschedule_unpublish( $object_id );
-		}
-	}
-
-	/**
-	 * Remove schedule
-	 *
-	 * @param array  $meta_ids   An array of deleted metadata entry IDs.
-	 * @param int    $object_id  Object ID.
-	 * @param string $meta_key   Meta key.
-	 */
-	public function remove_schedule( $meta_ids, $object_id, $meta_key ) {
-		if ( self::$post_meta_key === $meta_key ) {
-			$this->unschedule_unpublish( $object_id );
-		}
-	}
-
-	/**
 	 * Save the unpublish time for a given post
 	 */
 	public function action_save_unpublish_timestamp( $post_id ) {
@@ -249,121 +196,6 @@ class Unpublish {
 		$timestamp = strtotime( get_gmt_from_date( $unpublish_date ) );
 
 		update_post_meta( $post_id, self::$post_meta_key, $timestamp );
-	}
-
-	/**
-	 * Unpublish post
-	 *
-	 * Invoked by cron 'unpublish_post_cron' event.
-	 *
-	 * @param int $post_id Post ID.
-	 */
-	public function unpublish_post( $post_id ) {
-		$unpublish_timestamp = (int) $this->get_unpublish_timestamp( $post_id );
-
-		if ( $unpublish_timestamp > time() ) {
-			$this->schedule_unpublish( $post_id, $unpublish_timestamp );
-			return;
-		}
-
-		wp_trash_post( $post_id );
-	}
-
-	/**
-	 * Unschedule unpublishing post
-	 *
-	 * @param int $post_id Post ID.
-	 */
-	public function unschedule_unpublish( $post_id ) {
-		wp_clear_scheduled_hook( self::$cron_key, array( $post_id ) );
-	}
-
-	/**
-	 *  Schedule unpublishing post
-	 *
-	 *  @param  int $post_id   Post ID.
-	 *  @param  int $timestamp Timestamp.
-	 */
-	public function schedule_unpublish( $post_id, $timestamp ) {
-		$this->unschedule_unpublish( $post_id );
-
-		if ( $timestamp > current_time( 'timestamp', true ) ) {
-			wp_schedule_single_event( $timestamp, self::$cron_key, array( $post_id ) );
-		}
-	}
-
-	/**
-	 * Reschedule unpublishing post
-	 *
-	 * @param int $post_id Post ID.
-	 */
-	public function reschedule_unpublish( $post_id ) {
-		$timestamp = $this->get_unpublish_timestamp( $post_id );
-
-		if ( $timestamp ) {
-			$this->schedule_unpublish( $post_id, $timestamp );
-		}
-	}
-
-	/**
-	 * Unpublish any content that needs unpublishing
-	 */
-	public function unpublish_content() {
-		global $_wp_post_type_features;
-
-		$post_types = array();
-		foreach ( $_wp_post_type_features as $post_type => $features ) {
-			if ( ! empty( $features[ self::$supports_key ] ) ) {
-				$post_types[] = $post_type;
-			}
-		}
-
-		$args = array(
-			'fields'          => 'ids',
-			'post_type'       => $post_types,
-			'post_status'     => 'any',
-			'posts_per_page'  => 40,
-			'meta_query'      => array(
-				array(
-					'meta_key'    => self::$post_meta_key,
-					'meta_value'  => current_time( 'timestamp' ),
-					'compare'     => '<',
-					'type'        => 'NUMERIC',
-				),
-				array(
-					'meta_key'    => self::$post_meta_key,
-					'meta_value'  => current_time( 'timestamp' ),
-					'compare'     => 'EXISTS',
-				),
-			),
-		);
-		$query = new WP_Query( $args );
-
-		if ( $query->have_posts() ) {
-			foreach ( $query->posts as $post_id ) {
-				wp_trash_post( $post_id );
-			}
-		} else {
-			// There are no posts scheduled to unpublish, we can safely remove the old cron.
-			wp_clear_scheduled_hook( self::$deprecated_cron_key );
-		}
-	}
-
-	/**
-	 * Protect meta key so it doesn't show up on Custom Fields meta box
-	 *
-	 * @param bool   $protected Whether the key is protected. Default false.
-	 * @param string $meta_key  Meta key.
-	 * @param string $meta_type Meta type.
-	 *
-	 * @return bool
-	 */
-	public function protect_meta_key( $protected, $meta_key, $meta_type ) {
-		if ( $meta_key === self::$post_meta_key && 'post' === $meta_type ) {
-			$protected = true;
-		}
-
-		return $protected;
 	}
 
 	/**
