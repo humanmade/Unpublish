@@ -6,6 +6,9 @@ namespace HM\Unpublish\Classic_Editor;
 
 use HM\Unpublish;
 
+const ASSET_HANDLE = 'unpublish-classic-editor';
+const ASSET_VERSION = '2.0.0-alpha1';
+
 function bootstrap() : void {
 	add_action( 'load-post.php', __NAMESPACE__ .  '\\attach_hooks' );
 	add_action( 'load-post-new.php', __NAMESPACE__ .  '\\attach_hooks' );
@@ -22,6 +25,7 @@ function attach_hooks() : void {
 	}
 
 	add_action( 'post_submitbox_misc_actions', __NAMESPACE__ . '\\render_field', 1 );
+	add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets' );
 }
 
 /**
@@ -137,3 +141,28 @@ function render_field() : void {
 </div>
 <?php
 }
+
+/**
+ *  Enqueue assets
+ */
+function enqueue_scripts_styles() : void {
+	wp_enqueue_style(
+		ASSET_HANDLE,
+		plugins_url( 'assets/dist/classic-editor.css', __FILE__ ),
+		[],
+		ASSET_VERSION
+	);
+	wp_enqueue_script(
+		ASSET_HANDLE,
+		plugins_url( 'assets/dist/classic-editor.js', __FILE__ ),
+		[ 'jquery' ],
+		ASSET_VERSION,
+		true
+	);
+
+	wp_localize_script( ASSET_HANDLE, 'unpublish', array(
+		/* translators: 1: month, 2: day, 3: year, 4: hour, 5: minute */
+		'dateFormat' => __( '%1$s %2$s, %3$s @ %4$s:%5$s', 'unpublish' ),
+	) );
+}
+

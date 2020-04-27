@@ -55,22 +55,9 @@ class Unpublish {
 
 		$post_type = get_current_screen()->post_type;
 		if ( post_type_supports( $post_type, self::$supports_key ) ) {
-			add_action( 'admin_enqueue_scripts', array( self::$instance, 'enqueue_scripts_styles' ) );
 			add_action( 'save_post_' . $post_type, array( self::$instance, 'action_save_unpublish_timestamp' ) );
 		}
 
-	}
-
-	/**
-	 *  Enqueue scripts & styles
-	 */
-	public function enqueue_scripts_styles() {
-		wp_enqueue_style( 'unpublish', plugins_url( 'css/unpublish.css', __FILE__ ), array(), '0.1-alpha' );
-		wp_enqueue_script( 'unpublish', plugins_url( 'js/unpublish.js', __FILE__ ), array( 'jquery' ), '0.1-alpha', true );
-		wp_localize_script( 'unpublish', 'unpublish', array(
-			/* translators: 1: month, 2: day, 3: year, 4: hour, 5: minute */
-			'dateFormat' => __( '%1$s %2$s, %3$s @ %4$s:%5$s', 'unpublish' ),
-		) );
 	}
 
 	/**
