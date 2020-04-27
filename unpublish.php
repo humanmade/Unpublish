@@ -391,11 +391,3 @@ class Unpublish {
 		return ob_get_clean();
 	}
 }
-
-/**
- * Load the plugin
- */
-function unpublish() {
-	return Unpublish::get_instance();
-}
-add_action( 'plugins_loaded', 'unpublish' );
