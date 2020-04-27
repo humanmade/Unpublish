@@ -59,3 +59,24 @@ function schedule_unpublish( int $post_id, int $timestamp ) : bool {
 
 	return false;
 }
+
+/**
+ * Unpublish post
+ *
+ * @param int $post_id Post ID to unpublish.
+ *
+ * @return WP_Post|false|null — Post data on success, false or null on failure.
+ */
+function unpublish_post( int $post_id ) {
+	$unpublish_timestamp = get_unpublish_timestamp( $post_id );
+
+	if ( empty( $unpublish_timestamp ) ) {
+		return false;
+	}
+
+	if ( $unpublish_timestamp > time() ) {
+		return schedule_unpublish( $post_id, $unpublish_timestamp );
+	}
+
+	return wp_trash_post( $post_id );
+}
