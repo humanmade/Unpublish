@@ -150,13 +150,13 @@ function render_field() : void {
 function enqueue_assets() : void {
 	wp_enqueue_style(
 		ASSET_HANDLE,
-		plugins_url( 'assets/dist/classic-editor.css', __FILE__ ),
+		plugins_url( 'assets/dist/classic-editor.css', __DIR__ ),
 		[],
 		Unpublish\VERSION
 	);
 	wp_enqueue_script(
 		ASSET_HANDLE,
-		plugins_url( 'assets/dist/classic-editor.js', __FILE__ ),
+		plugins_url( 'assets/dist/classic-editor.js', __DIR__ ),
 		[ 'jquery' ],
 		Unpublish\VERSION,
 		true
