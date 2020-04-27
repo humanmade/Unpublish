@@ -55,7 +55,6 @@ class Unpublish {
 
 		add_action( 'load-post.php', array( self::$instance, 'action_load_customizations' ) );
 		add_action( 'load-post-new.php', array( self::$instance, 'action_load_customizations' ) );
-		add_action( self::$cron_key, array( self::$instance, 'unpublish_post' ) );
 	}
 
 	/**
