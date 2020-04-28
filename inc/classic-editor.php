@@ -25,9 +25,11 @@ function attach_hooks() : void {
 		return;
 	}
 
-	add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets' );
 	add_action( 'post_submitbox_misc_actions', __NAMESPACE__ . '\\render_field', 1 );
 	add_action( 'save_post_' . $post_type, __NAMESPACE__ . '\\save_unpublish_timestamp', 10, 2 );
+
+	add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets' );
+	add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\remove_enqueue_assets_action' );
 }
 
 /**
@@ -177,6 +179,13 @@ function enqueue_assets() : void {
 		/* translators: 1: month, 2: day, 3: year, 4: hour, 5: minute */
 		'dateFormat' => __( '%1$s %2$s, %3$s @ %4$s:%5$s', 'unpublish' ),
 	] );
+}
+
+/**
+ * Remove enqueue assets action if the block editor is used
+ */
+function remove_enqueue_assets_action() : void {
+	remove_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets' );
 }
 
 /**
