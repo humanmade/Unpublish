@@ -7,6 +7,7 @@ module.exports = function( env, args ) {
 	return {
 		mode,
 		entry: {
+			'block-editor': './assets/src/block-editor.js',
 			'classic-editor': './assets/src/classic-editor.js',
 		},
 		output: {
