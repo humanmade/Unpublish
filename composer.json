@@ -1,21 +1,21 @@
 {
-    "name": "humanmade/unpublish",
-    "description": "Unpublish your content",
-    "type": "wordpress-plugin",
-    "license": "GPL2-or-later",
-    "authors": [
-        {
-            "name": "Humanmade Ltd",
-            "email": "hello@humanmade.com"
-        }
-    ],
-    "require": {
-        "php": "^7.0"
-    },
-    "require-dev": {
-        "humanmade/coding-standards": "^0.8.0"
-    },
-    "scripts": {
-        "lint": "phpcs ."
+  "name": "humanmade/unpublish",
+  "description": "Unpublish your content",
+  "type": "wordpress-plugin",
+  "license": "GPL2-or-later",
+  "authors": [
+    {
+      "name": "Humanmade Ltd",
+      "email": "hello@humanmade.com"
     }
+  ],
+  "require": {
+    "php": "^7.0"
+  },
+  "require-dev": {
+    "humanmade/coding-standards": "^0.8.0"
+  },
+  "scripts": {
+    "lint": "phpcs ."
+  }
 }
