@@ -4,6 +4,8 @@
     "node": true
   },
   "globals": {
+    "unpublish": false,
+    "jQuery": false,
     "wp": false
   },
   "rules": {
