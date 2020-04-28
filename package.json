@@ -2,9 +2,6 @@
   "name": "@humanmade/unpublish",
   "version": "2.0.0",
   "description": "Unpublish your content",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/humanmade/Unpublish.git"
@@ -25,5 +22,9 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.19.0",
     "prettier": "npm:wp-prettier@^1.19.1"
+  },
+  "scripts": {
+    "lint:js": "eslint .",
+    "lint": "npm run lint:js"
   }
 }
