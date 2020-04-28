@@ -6,6 +6,10 @@
 	margin-right: 0.25em;
 }
 
+#unpublish-timestampdiv {
+	padding-top: 5px;
+}
+
 .unpublish-timestamp-wrap input,
 .unpublish-timestamp-wrap select {
 	font-size: 12px;
@@ -20,7 +24,7 @@
 #unpublish-mm {
 	height: 21px;
 	line-height: 14px;
-	padding: 0;
+	padding: 0 24px 0 8px;
 	vertical-align: top;
 }
 
