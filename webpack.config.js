@@ -22,6 +22,7 @@ module.exports = function( env, args ) {
 			'@wordpress/data': { this: [ 'wp', 'data' ] },
 			'@wordpress/dom-ready': { this: [ 'wp', 'domReady' ] },
 			'@wordpress/edit-post': { this: [ 'wp', 'editPost' ] },
+			'@wordpress/editor': { this: [ 'wp', 'editor' ] },
 			'@wordpress/element': { this: [ 'wp', 'element' ] },
 			'@wordpress/i18n': { this: [ 'wp', 'i18n' ] },
 			'@wordpress/plugins': { this: [ 'wp', 'plugins' ] },

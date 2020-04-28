@@ -42,6 +42,7 @@ function enqueue_assets() : void {
 			'wp-components',
 			'wp-data',
 			'wp-dom-ready',
+			'wp-editor',
 			'wp-element',
 			'wp-edit-post',
 			'wp-i18n',
