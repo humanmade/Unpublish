@@ -12,6 +12,20 @@ const ASSET_HANDLE = 'unpublish-block-editor';
  * Block editor bootstrapper
  */
 function bootstrap() : void {
+	add_action( 'load-post.php', __NAMESPACE__ . '\\attach_hooks' );
+	add_action( 'load-post-new.php', __NAMESPACE__ . '\\attach_hooks' );
+}
+
+/**
+ * Attach hooks for block editor screen
+ */
+function attach_hooks() : void {
+	$post_type = get_current_screen()->post_type;
+
+	if ( ! post_type_supports( $post_type, Unpublish\FEATURE_NAME ) ) {
+		return;
+	}
+
 	add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\enqueue_assets' );
 }
 
