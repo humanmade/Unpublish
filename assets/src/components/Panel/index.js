@@ -4,6 +4,8 @@ import { PluginPostStatusInfo } from '@wordpress/edit-post';
 import { Dropdown, Button } from '@wordpress/components';
 import { PostSchedule as PostScheduleForm } from '@wordpress/editor';
 
+import UnpublishLabel from '../UnpublishLabel';
+
 export default function Panel() {
 	return (
 		<PluginPostStatusInfo className="unpublish">
@@ -19,7 +21,7 @@ export default function Panel() {
 							aria-expanded={ isOpen }
 							isLink
 						>
-							{ __( 'Schedule' ) }
+							<UnpublishLabel />
 						</Button>
 					</>
 				) }
