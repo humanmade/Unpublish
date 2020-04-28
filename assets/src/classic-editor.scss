@@ -1,7 +1,9 @@
-#unpublish-timestamp:before {
+/* stylelint-disable declaration-property-unit-blacklist, declaration-property-unit-whitelist */
+
+#unpublish-timestamp::before {
 	color: #82878c;
 	top: -1px;
-	margin-right: .25em;
+	margin-right: 0.25em;
 }
 
 .unpublish-timestamp-wrap input,
