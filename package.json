@@ -14,5 +14,8 @@
   "bugs": {
     "url": "https://github.com/humanmade/Unpublish/issues"
   },
-  "homepage": "https://github.com/humanmade/Unpublish#readme"
+  "homepage": "https://github.com/humanmade/Unpublish#readme",
+  "devDependencies": {
+    "prettier": "npm:wp-prettier@^1.19.1"
+  }
 }
