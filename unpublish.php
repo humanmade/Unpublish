@@ -15,10 +15,12 @@ declare( strict_types = 1 );
 
 namespace HM\Unpublish;
 
+require_once __DIR__ . '/inc/block-editor.php';
 require_once __DIR__ . '/inc/classic-editor.php';
 require_once __DIR__ . '/inc/namespace.php';
 require_once __DIR__ . '/inc/post-meta.php';
 
 bootstrap();
+Block_Editor\bootstrap();
 Classic_Editor\bootstrap();
 Post_Meta\bootstrap();
