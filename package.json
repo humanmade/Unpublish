@@ -1,0 +1,18 @@
+{
+  "name": "@humanmade/unpublish",
+  "version": "2.0.0",
+  "description": "Unpublish your content",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/humanmade/Unpublish.git"
+  },
+  "author": "Humanmade Ltd.",
+  "license": "GPL-2.0-or-later",
+  "bugs": {
+    "url": "https://github.com/humanmade/Unpublish/issues"
+  },
+  "homepage": "https://github.com/humanmade/Unpublish#readme"
+}
