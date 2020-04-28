@@ -1,0 +1,30 @@
+{
+  "arrowParens": "avoid",
+  "bracketSpacing": true,
+  "parenSpacing": true,
+  "printWidth": 120,
+  "quoteProps": "consistent",
+  "semi": true,
+  "singleQuote": true,
+  "svelteBracketNewLine": true,
+  "svelteStrictMode": true,
+  "tabWidth": 4,
+  "trailingComma": "all",
+  "useTabs": true,
+  "overrides": [
+    {
+      "files": [ "*.json" ],
+      "options": {
+        "useTabs": false,
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": [ "*.yaml", "*.yml" ],
+      "options": {
+        "useTabs": false,
+        "tabWidth": 4
+      }
+    }
+  ]
+}
