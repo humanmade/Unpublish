@@ -38,6 +38,8 @@
     "webpack-cli": "^3.3.11"
   },
   "scripts": {
+    "build": "webpack",
+    "dev": "webpack --mode=development --watch",
     "lint:css": "stylelint 'assets/src/**/*.scss'",
     "lint:js": "eslint .",
     "lint": "npm run lint:css && npm run lint:js"
