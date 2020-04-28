@@ -12,6 +12,9 @@
     "url": "https://github.com/humanmade/Unpublish/issues"
   },
   "homepage": "https://github.com/humanmade/Unpublish#readme",
+  "browserslist": [
+    "extends @wordpress/browserslist-config"
+  ],
   "devDependencies": {
     "@humanmade/stylelint-config": "^0.8.0",
     "@wordpress/babel-preset-default": "^4.12.1",
