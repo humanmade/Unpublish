@@ -1,0 +1,16 @@
+{
+    "name": "humanmade/unpublish",
+    "description": "Unpublish your content",
+    "type": "wordpress-plugin",
+    "require-dev": {
+        "humanmade/coding-standards": "^0.8.0"
+    },
+    "license": "GPL2-or-later",
+    "authors": [
+        {
+            "name": "Humanmade Ltd",
+            "email": "hello@humanmade.com"
+        }
+    ],
+    "require": {}
+}
