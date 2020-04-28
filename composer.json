@@ -14,5 +14,8 @@
     },
     "require-dev": {
         "humanmade/coding-standards": "^0.8.0"
+    },
+    "scripts": {
+        "lint": "phpcs ."
     }
 }
