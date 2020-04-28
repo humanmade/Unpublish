@@ -11,8 +11,8 @@ const ASSET_HANDLE = 'unpublish-classic-editor';
 const NONCE_NAME = 'unpublish-nonce';
 
 function bootstrap() : void {
-	add_action( 'load-post.php', __NAMESPACE__ .  '\\attach_hooks' );
-	add_action( 'load-post-new.php', __NAMESPACE__ .  '\\attach_hooks' );
+	add_action( 'load-post.php', __NAMESPACE__ . '\\attach_hooks' );
+	add_action( 'load-post-new.php', __NAMESPACE__ . '\\attach_hooks' );
 }
 
 /**
@@ -45,11 +45,12 @@ function get_month_names() : array {
 	for ( $i = 1; $i < 13; $i = $i + 1 ) {
 		$month_num     = zeroise( $i, 2 );
 		$month_text    = $wp_locale->get_month_abbrev( $wp_locale->get_month( $i ) );
-		$month_names[] = array(
+		$month_names[] = [
 			'value' => $month_num,
 			'text'  => $month_text,
+			// translators: 1: month number, 2: month name.
 			'label' => sprintf( _x( '%1$s-%2$s', 'month number-name', 'unpublish' ), $month_num, $month_text ),
-		);
+		];
 	}
 
 	return $month_names;
@@ -59,7 +60,7 @@ function get_month_names() : array {
  * Render the UI for changing the unpublish time of a post
  */
 function render_field() : void {
-	$date_units = ['aa', 'mm', 'jj', 'hh', 'mn' ];
+	$date_units = [ 'aa', 'mm', 'jj', 'hh', 'mn' ];
 	$month_names = get_month_names();
 	$unpublish_timestamp = Unpublish\get_unpublish_timestamp( get_the_ID() );
 
@@ -68,26 +69,34 @@ function render_field() : void {
 		/* translators: Unpublish box date format, see https://www.php.net/manual/en/function.date.php */
 		$datetime_format = __( 'M j, Y @ H:i', 'unpublish' );
 		$unpublish_date  = date_i18n( $datetime_format, $local_timestamp );
-		$date_parts      = array(
+		$date_parts      = [
 			'jj' => date( 'd', $local_timestamp ),
 			'mm' => date( 'm', $local_timestamp ),
 			'aa' => date( 'Y', $local_timestamp ),
 			'hh' => date( 'H', $local_timestamp ),
 			'mn' => date( 'i', $local_timestamp ),
-		);
+		];
 	} else {
 		$unpublish_date = '&mdash;';
-		$date_parts     = array(
+		$date_parts     = [
 			'jj' => '',
 			'mm' => '',
 			'aa' => '',
 			'hh' => '',
 			'mn' => '',
-		);
+		];
 	}
-?>
+	?>
 <div class="misc-pub-section endtime misc-pub-endtime">
-	<span id="unpublish-timestamp" class="dashicons-before dashicons-calendar-alt"><?php printf( __( 'Unpublish on: <strong>%s</strong>', 'unpublish' ), $unpublish_date ); // xss ok ?></span>
+	<span id="unpublish-timestamp" class="dashicons-before dashicons-calendar-alt">
+		<?php
+		printf(
+			// translators: %s: Unpublish time.
+			__( 'Unpublish on: <strong>%s</strong>', 'unpublish' ),
+			$unpublish_date
+		); // xss ok
+		?>
+	</span>
 	<a href="#edit-unpublish-timestamp" class="edit-unpublish-timestamp hide-if-no-js">
 		<span aria-hidden="true"><?php esc_html_e( 'Edit', 'unpublish' ); ?></span>
 		<span class="screen-reader-text"><?php esc_html_e( 'Edit unpublish date and time', 'unpublish' ); ?></span>
@@ -101,13 +110,15 @@ function render_field() : void {
 				<select id="unpublish-mm" name="unpublish-mm">
 					<option value=""><?php esc_html_e( '&mdash;', 'unpublish' ); ?></option>
 					<?php foreach ( $month_names as $month ) : ?>
-						<?php printf(
+						<?php
+						printf(
 							'<option value="%s" data-text="%s"%s>%s</option>',
 							esc_attr( $month['value'] ),
 							esc_attr( $month['text'] ),
 							selected( $date_parts['mm'], $month['value'], false ),
 							esc_html( $month['label'] )
-						); ?>
+						);
+						?>
 					<?php endforeach; ?>
 				</select>
 			</label>
@@ -141,7 +152,7 @@ function render_field() : void {
 		<input type="hidden" class="<?php echo sanitize_html_class( sprintf( 'unpublish-%s-orig', $unit ) ); ?>" value="<?php echo esc_attr( $date_parts[ $unit ] ); ?>" />
 	<?php endforeach; ?>
 </div>
-<?php
+	<?php
 }
 
 /**
@@ -162,10 +173,10 @@ function enqueue_assets() : void {
 		true
 	);
 
-	wp_localize_script( ASSET_HANDLE, 'unpublish', array(
+	wp_localize_script( ASSET_HANDLE, 'unpublish', [
 		/* translators: 1: month, 2: day, 3: year, 4: hour, 5: minute */
 		'dateFormat' => __( '%1$s %2$s, %3$s @ %4$s:%5$s', 'unpublish' ),
-	) );
+	] );
 }
 
 /**
@@ -185,7 +196,7 @@ function save_unpublish_timestamp( int $post_id, WP_Post $post ) : void {
 
 	check_admin_referer( NONCE_NAME, NONCE_NAME );
 
-	$units       = array( 'aa', 'mm', 'jj', 'hh', 'mn' );
+	$units       = [ 'aa', 'mm', 'jj', 'hh', 'mn' ];
 	$units_count = count( $units );
 	$date_parts  = [];
 
