@@ -9,20 +9,12 @@ import Label from './Label';
 
 const CONTENT_CLASSNAME = 'edit-post-post-unpublish__dialog';
 
-function Toggle( { date, onToggle, isOpen } ) {
-	return (
-		<Button className={ CONTENT_CLASSNAME } onClick={ onToggle } aria-expanded={ isOpen } isLink>
-			<Label date={ date } />
-		</Button>
-	);
-}
-
 export function Form( { date } ) {
 	return (
 		<Dropdown
 			position="bottom left"
 			contentClassName={ CONTENT_CLASSNAME }
-			renderToggle={ props => <Toggle date={ date } { ...props } /> }
+			renderToggle={ props => <Label className={ CONTENT_CLASSNAME } date={ date } { ...props } /> }
 			renderContent={ () => <Field date={ date } /> }
 		/>
 	);
