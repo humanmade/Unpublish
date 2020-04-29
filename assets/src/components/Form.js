@@ -21,7 +21,7 @@ export function Form( { date } ) {
 		<Dropdown
 			position="bottom left"
 			contentClassName={ CONTENT_CLASSNAME }
-			renderToggle={ props => <Toggle { ...props } /> }
+			renderToggle={ props => <Toggle date={ date } { ...props } /> }
 			renderContent={ () => <Field date={ date } /> }
 		/>
 	);
