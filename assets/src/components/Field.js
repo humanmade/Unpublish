@@ -1,4 +1,5 @@
 import React from '@wordpress/element';
+import PropTypes from 'prop-types';
 import { __experimentalGetSettings } from '@wordpress/date';
 import { withSelect, withDispatch } from '@wordpress/data';
 import { compose } from '@wordpress/compose';
@@ -26,6 +27,11 @@ export function Field( { date, onUpdateDate } ) {
 		/>
 	);
 }
+
+Field.propTypes = {
+	date: PropTypes.number.isRequired,
+	onUpdateDate: PropTypes.func.isRequired,
+};
 
 const FieldWithData = compose( [
 	withSelect( select => {
