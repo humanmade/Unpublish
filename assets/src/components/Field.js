@@ -1,8 +1,6 @@
 import React from '@wordpress/element';
 import PropTypes from 'prop-types';
-import { __experimentalGetSettings, getDate, isInTheFuture } from '@wordpress/date';
-import { withDispatch } from '@wordpress/data';
-import { compose } from '@wordpress/compose';
+import { __experimentalGetSettings } from '@wordpress/date';
 import { DateTimePicker } from '@wordpress/components';
 
 function is12HourTime() {
@@ -22,16 +20,12 @@ function is12HourTime() {
 	return result;
 }
 
-function isDateValid( date ) {
-	return isInTheFuture( date );
-}
-
-export function Field( { date, onUpdateDate } ) {
+export default function Field( { date, onChange } ) {
 	return (
 		<DateTimePicker
 			key="unpublish-date-time-picker"
 			currentDate={ date }
-			onChange={ onUpdateDate }
+			onChange={ onChange }
 			is12Hour={ is12HourTime() }
 		/>
 	);
@@ -39,29 +33,5 @@ export function Field( { date, onUpdateDate } ) {
 
 Field.propTypes = {
 	date: PropTypes.number.isRequired,
-	onUpdateDate: PropTypes.func.isRequired,
+	onChange: PropTypes.func.isRequired,
 };
-
-const FieldWithData = compose( [
-	withDispatch( dispatch => {
-		const { editPost } = dispatch( 'core/editor' );
-
-		return {
-			onUpdateDate( date ) {
-				if ( ! isDateValid( date ) ) {
-					return;
-				}
-
-				const timestamp = getDate( date ).getTime() / 1000;
-
-				editPost( {
-					meta: {
-						unpublish_timestamp: timestamp,
-					},
-				} );
-			},
-		};
-	} ),
-] )( Field );
-
-export default FieldWithData;
