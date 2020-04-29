@@ -1,4 +1,4 @@
-import React from '@wordpress/element';
+import React, { useEffect } from '@wordpress/element';
 import PropTypes from 'prop-types';
 import { getDate, isInTheFuture } from '@wordpress/date';
 import { compose } from '@wordpress/compose';
@@ -10,7 +10,13 @@ import Label from './Label';
 
 const CONTENT_CLASSNAME = 'edit-post-post-unpublish__dialog';
 
-export function Form( { date, onUpdateDate } ) {
+export function Form( { date, postDate, onUpdateDate } ) {
+	useEffect( () => {
+		if ( date <= postDate ) {
+			onUpdateDate( 0 );
+		}
+	}, [ date, postDate ] );
+
 	return (
 		<>
 			<Dropdown
@@ -30,6 +36,7 @@ export function Form( { date, onUpdateDate } ) {
 
 Form.propTypes = {
 	date: PropTypes.number.isRequired,
+	postDate: PropTypes.number.isRequired,
 	onUpdateDate: PropTypes.func.isRequired,
 };
 
@@ -48,22 +55,32 @@ function isDateValid( date, postDate ) {
 	return isInTheFuture( date ) && date > postDate;
 }
 
-function addUpdater( dispatch ) {
+function addUpdater( dispatch, ownProps ) {
+	const { postDate } = ownProps;
 	const { editPost } = dispatch( 'core/editor' );
+
+	const update = timestamp => {
+		editPost( {
+			meta: {
+				unpublish_timestamp: timestamp,
+			},
+		} );
+	};
 
 	return {
 		onUpdateDate( date ) {
-			if ( date && ! isDateValid( date ) ) {
+			if ( ! date ) {
+				update( 0 );
 				return;
 			}
 
-			const timestamp = date ? getDate( date ).getTime() / 1000 : 0;
+			const timestamp = getDate( date ).getTime();
 
-			editPost( {
-				meta: {
-					unpublish_timestamp: timestamp,
-				},
-			} );
+			if ( ! isDateValid( timestamp, postDate ) ) {
+				return;
+			}
+
+			update( timestamp / 1000 );
 		},
 	};
 }
