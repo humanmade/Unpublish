@@ -5,12 +5,13 @@ import { withSelect, withDispatch } from '@wordpress/data';
 import { compose } from '@wordpress/compose';
 import { DateTimePicker } from '@wordpress/components';
 
-export function Field( { date, onUpdateDate } ) {
-	const settings = __experimentalGetSettings();
+function is12HourTime() {
+	const { formats } = __experimentalGetSettings();
+	const { time } = formats;
 	// To know if the current timezone is a 12 hour time with look for "a" in the time format
 	// We also make sure this a is not escaped by a "/"
-	const is12HourTime = /a(?!\\)/i.test(
-		settings.formats.time
+	const result = /a(?!\\)/i.test(
+		time
 			.toLowerCase() // Test only the lower case a
 			.replace( /\\\\/g, '' ) // Replace "//" with empty strings
 			.split( '' )
@@ -18,12 +19,16 @@ export function Field( { date, onUpdateDate } ) {
 			.join( '' ), // Reverse the string and test for "a" not followed by a slash
 	);
 
+	return result;
+}
+
+export function Field( { date, onUpdateDate } ) {
 	return (
 		<DateTimePicker
 			key="unpublish-date-time-picker"
 			currentDate={ date }
 			onChange={ onUpdateDate }
-			is12Hour={ is12HourTime }
+			is12Hour={ is12HourTime() }
 		/>
 	);
 }
