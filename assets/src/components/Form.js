@@ -1,4 +1,5 @@
 import React from '@wordpress/element';
+import PropTypes from 'prop-types';
 import { compose } from '@wordpress/compose';
 import { withSelect } from '@wordpress/data';
 import { Dropdown, Button } from '@wordpress/components';
@@ -26,6 +27,10 @@ export function Form( { date } ) {
 		/>
 	);
 }
+
+Form.propTypes = {
+	date: PropTypes.number.isRequired,
+};
 
 function addCurrentValue( select ) {
 	const { getEditedPostAttribute } = select( 'core/editor' );
