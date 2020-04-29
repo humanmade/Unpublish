@@ -2,8 +2,8 @@ import React from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { PluginPostStatusInfo } from '@wordpress/edit-post';
 import { Dropdown, Button } from '@wordpress/components';
-import { PostSchedule as PostScheduleForm } from '@wordpress/editor';
 
+import Field from '../Field';
 import UnpublishLabel from '../UnpublishLabel';
 
 export default function Panel() {
@@ -25,7 +25,7 @@ export default function Panel() {
 						</Button>
 					</>
 				) }
-				renderContent={ () => <PostScheduleForm /> }
+				renderContent={ () => <Field /> }
 			/>
 		</PluginPostStatusInfo>
 	);
