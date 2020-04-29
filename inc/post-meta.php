@@ -1,0 +1,73 @@
+<?php
+
+declare( strict_types = 1 );
+
+namespace HM\Unpublish\Post_Meta;
+
+use HM\Unpublish;
+
+/**
+ * Post Meta Bootstrapper
+ */
+function bootstrap() : void {
+	add_action( 'added_post_meta', __NAMESPACE__ . '\\update_schedule', 10, 4 );
+	add_action( 'updated_post_meta', __NAMESPACE__ . '\\update_schedule', 10, 4 );
+	add_action( 'deleted_post_meta', __NAMESPACE__ . '\\remove_schedule', 10, 3 );
+	add_filter( 'is_protected_meta', __NAMESPACE__ . '\\protect_meta_key', 10, 3 );
+}
+
+/**
+ * Update schedule when post meta is added/updated
+ *
+ * @param int    $meta_id    ID of updated metadata entry.
+ * @param int    $object_id  Object ID.
+ * @param string $meta_key   Meta key.
+ * @param mixed  $meta_value Meta value.
+ *
+ * @return bool
+ */
+function update_schedule( int $meta_id, int $object_id, string $meta_key, $meta_value ) : bool {
+	if ( $meta_key !== Unpublish\POST_META_KEY ) {
+		return false;
+	}
+
+	if ( $meta_value ) {
+		return Unpublish\schedule_unpublish( $object_id, absint( $meta_value ) );
+	} else {
+		return Unpublish\unschedule_unpublish( $object_id );
+	}
+}
+
+/**
+ * Remove schedule
+ *
+ * @param int[]  $meta_ids   An array of deleted metadata entry IDs.
+ * @param int    $object_id  Object ID.
+ * @param string $meta_key   Meta key.
+ *
+ * @return bool
+ */
+function remove_schedule( array $meta_ids, int $object_id, string $meta_key ) : bool {
+	if ( $meta_key === Unpublish\POST_META_KEY ) {
+		return Unpublish\unschedule_unpublish( $object_id );
+	}
+
+	return false;
+}
+
+/**
+ * Protect meta key so it doesn't show up on Custom Fields meta box
+ *
+ * @param bool   $is_protected Whether the key is protected. Default false.
+ * @param string $meta_key     Meta key.
+ * @param string $meta_type    Meta type.
+ *
+ * @return bool
+ */
+function protect_meta_key( bool $is_protected, string $meta_key, string $meta_type ) : bool {
+	if ( $meta_key === Unpublish\POST_META_KEY && $meta_type === 'post' ) {
+		$is_protected = true;
+	}
+
+	return $is_protected;
+}
