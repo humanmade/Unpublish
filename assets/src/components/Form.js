@@ -8,10 +8,10 @@ import Label from './Label';
 
 const CONTENT_CLASSNAME = 'edit-post-post-unpublish__dialog';
 
-function Toggle( { onToggle, isOpen } ) {
+function Toggle( { date, onToggle, isOpen } ) {
 	return (
 		<Button className={ CONTENT_CLASSNAME } onClick={ onToggle } aria-expanded={ isOpen } isLink>
-			<Label />
+			<Label date={ date } />
 		</Button>
 	);
 }
