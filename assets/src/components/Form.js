@@ -2,7 +2,7 @@ import React from '@wordpress/element';
 import PropTypes from 'prop-types';
 import { compose } from '@wordpress/compose';
 import { withSelect } from '@wordpress/data';
-import { Dropdown, Button } from '@wordpress/components';
+import { Dropdown } from '@wordpress/components';
 
 import Field from './Field';
 import Label from './Label';
