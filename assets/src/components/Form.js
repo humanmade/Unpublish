@@ -1,5 +1,6 @@
 import React, { useEffect } from '@wordpress/element';
 import PropTypes from 'prop-types';
+import { __ } from '@wordpress/i18n';
 import { getDate, isInTheFuture } from '@wordpress/date';
 import { compose } from '@wordpress/compose';
 import { Button, Dropdown } from '@wordpress/components';
@@ -27,7 +28,7 @@ export function Form( { date, postDate, onUpdateDate } ) {
 			/>
 			{ date ? (
 				<Button isLink onClick={ () => onUpdateDate( 0 ) }>
-					Clear
+					{ __( 'Clear', 'unpublish' ) }
 				</Button>
 			) : null }
 		</>
