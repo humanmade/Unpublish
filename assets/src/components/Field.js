@@ -30,7 +30,7 @@ export function Field( { date, onUpdateDate } ) {
 	return (
 		<DateTimePicker
 			key="unpublish-date-time-picker"
-			currentDate={ date * 1000 }
+			currentDate={ date }
 			onChange={ onUpdateDate }
 			is12Hour={ is12HourTime() }
 		/>

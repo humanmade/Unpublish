@@ -28,7 +28,9 @@ function addCurrentValue( select ) {
 	const { getEditedPostAttribute } = select( 'core/editor' );
 	const { unpublish_timestamp: date } = getEditedPostAttribute( 'meta' );
 
-	return { date };
+	return {
+		date: date * 1000,
+	};
 }
 
 const FormWithData = compose( [ withSelect( addCurrentValue ) ] )( Form );
