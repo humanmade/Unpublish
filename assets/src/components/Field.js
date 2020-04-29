@@ -1,7 +1,7 @@
 import React from '@wordpress/element';
 import PropTypes from 'prop-types';
 import { __experimentalGetSettings, getDate, isInTheFuture } from '@wordpress/date';
-import { withSelect, withDispatch } from '@wordpress/data';
+import { withDispatch } from '@wordpress/data';
 import { compose } from '@wordpress/compose';
 import { DateTimePicker } from '@wordpress/components';
 
@@ -43,12 +43,6 @@ Field.propTypes = {
 };
 
 const FieldWithData = compose( [
-	withSelect( select => {
-		const { getEditedPostAttribute } = select( 'core/editor' );
-		const { unpublish_timestamp: date } = getEditedPostAttribute( 'meta' );
-
-		return { date };
-	} ),
 	withDispatch( dispatch => {
 		const { editPost } = dispatch( 'core/editor' );
 
