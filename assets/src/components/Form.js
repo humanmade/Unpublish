@@ -2,7 +2,7 @@ import React from '@wordpress/element';
 import PropTypes from 'prop-types';
 import { getDate, isInTheFuture } from '@wordpress/date';
 import { compose } from '@wordpress/compose';
-import { Dropdown } from '@wordpress/components';
+import { Button, Dropdown } from '@wordpress/components';
 import { withDispatch, withSelect } from '@wordpress/data';
 
 import Field from './Field';
@@ -12,12 +12,19 @@ const CONTENT_CLASSNAME = 'edit-post-post-unpublish__dialog';
 
 export function Form( { date, onUpdateDate } ) {
 	return (
-		<Dropdown
-			position="bottom left"
-			contentClassName={ CONTENT_CLASSNAME }
-			renderToggle={ props => <Label className={ CONTENT_CLASSNAME } date={ date } { ...props } /> }
-			renderContent={ () => <Field date={ date } onChange={ onUpdateDate } /> }
-		/>
+		<>
+			<Dropdown
+				position="bottom left"
+				contentClassName={ CONTENT_CLASSNAME }
+				renderToggle={ props => <Label className={ CONTENT_CLASSNAME } date={ date } { ...props } /> }
+				renderContent={ () => <Field date={ date } onChange={ onUpdateDate } /> }
+			/>
+			{ date ? (
+				<Button isLink onClick={ () => onUpdateDate( 0 ) }>
+					Clear
+				</Button>
+			) : null }
+		</>
 	);
 }
 
@@ -44,11 +51,11 @@ function addUpdater( dispatch ) {
 
 	return {
 		onUpdateDate( date ) {
-			if ( ! isDateValid( date ) ) {
+			if ( date && ! isDateValid( date ) ) {
 				return;
 			}
 
-			const timestamp = getDate( date ).getTime() / 1000;
+			const timestamp = date ? getDate( date ).getTime() / 1000 : 0;
 
 			editPost( {
 				meta: {
