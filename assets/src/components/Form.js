@@ -44,8 +44,8 @@ function addSelectors( select ) {
 	};
 }
 
-function isDateValid( date ) {
-	return isInTheFuture( date );
+function isDateValid( date, postDate ) {
+	return isInTheFuture( date ) && date > postDate;
 }
 
 function addUpdater( dispatch ) {
