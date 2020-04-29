@@ -33,12 +33,14 @@ Form.propTypes = {
 	onUpdateDate: PropTypes.func.isRequired,
 };
 
-function addCurrentValue( select ) {
+function addSelectors( select ) {
 	const { getEditedPostAttribute } = select( 'core/editor' );
 	const { unpublish_timestamp: date } = getEditedPostAttribute( 'meta' );
+	const postDate = getEditedPostAttribute( 'date' );
 
 	return {
 		date: date * 1000,
+		postDate: getDate( postDate ).getTime(),
 	};
 }
 
@@ -66,6 +68,6 @@ function addUpdater( dispatch ) {
 	};
 }
 
-const ComposedForm = compose( [ withSelect( addCurrentValue ), withDispatch( addUpdater ) ] )( Form );
+const ComposedForm = compose( [ withSelect( addSelectors ), withDispatch( addUpdater ) ] )( Form );
 
 export default ComposedForm;
