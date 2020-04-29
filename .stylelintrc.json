@@ -1,0 +1,18 @@
+{
+  "extends": "@humanmade/stylelint-config",
+  "rules": {
+    "rule-empty-line-before": [
+      "always",
+      {
+        "ignore": [ "after-comment", "first-nested" ]
+      }
+    ],
+    "selector-class-pattern": [
+      "^([a-z][a-z0-9]*)([-_]{1,2}[a-z0-9]+)*$",
+      {
+        "message": "Selector should use lowercase and separate words with maximum two hyphens or underscores (selector-class-pattern)"
+      }
+    ],
+    "selector-pseudo-class-parentheses-space-inside": "always"
+  }
+}

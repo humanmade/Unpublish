@@ -44,7 +44,7 @@ function get_unpublish_timestamp( int $post_id ) : ? int {
  *               arguments combination), false if unscheduling one or more events fail.
  */
 function unschedule_unpublish( int $post_id ) {
-	return wp_clear_scheduled_hook( CRON_KEY, array( $post_id ) );
+	return wp_clear_scheduled_hook( CRON_KEY, [ $post_id ] );
 }
 
 /**
