@@ -41,6 +41,7 @@ function enqueue_assets() : void {
 			'wp-compose',
 			'wp-components',
 			'wp-data',
+			'wp-date',
 			'wp-dom-ready',
 			'wp-editor',
 			'wp-element',

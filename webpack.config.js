@@ -20,6 +20,7 @@ module.exports = function( env, args ) {
 			'@wordpress/compose': { this: [ 'wp', 'compose' ] },
 			'@wordpress/components': { this: [ 'wp', 'components' ] },
 			'@wordpress/data': { this: [ 'wp', 'data' ] },
+			'@wordpress/date': { this: [ 'wp', 'date' ] },
 			'@wordpress/dom-ready': { this: [ 'wp', 'domReady' ] },
 			'@wordpress/edit-post': { this: [ 'wp', 'editPost' ] },
 			'@wordpress/editor': { this: [ 'wp', 'editor' ] },
