@@ -16,13 +16,13 @@ function Toggle( { onToggle, isOpen } ) {
 	);
 }
 
-export function Form() {
+export function Form( { date } ) {
 	return (
 		<Dropdown
 			position="bottom left"
 			contentClassName={ CONTENT_CLASSNAME }
 			renderToggle={ props => <Toggle { ...props } /> }
-			renderContent={ () => <Field /> }
+			renderContent={ () => <Field date={ date } /> }
 		/>
 	);
 }
