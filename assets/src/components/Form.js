@@ -1,4 +1,6 @@
 import React from '@wordpress/element';
+import { compose } from '@wordpress/compose';
+import { withSelect } from '@wordpress/data';
 import { Dropdown, Button } from '@wordpress/components';
 
 import Field from './Field';
@@ -14,7 +16,7 @@ function Toggle( { onToggle, isOpen } ) {
 	);
 }
 
-export default function Form() {
+export function Form() {
 	return (
 		<Dropdown
 			position="bottom left"
@@ -24,3 +26,14 @@ export default function Form() {
 		/>
 	);
 }
+
+function addCurrentValue( select ) {
+	const { getEditedPostAttribute } = select( 'core/editor' );
+	const { unpublish_timestamp: date } = getEditedPostAttribute( 'meta' );
+
+	return { date };
+}
+
+const FormWithData = compose( [ withSelect( addCurrentValue ) ] )( Form );
+
+export default FormWithData;
