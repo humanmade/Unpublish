@@ -1,3 +1,4 @@
+import React from '@wordpress/element';
 import { __experimentalGetSettings } from '@wordpress/date';
 import { withSelect, withDispatch } from '@wordpress/data';
 import { compose } from '@wordpress/compose';
