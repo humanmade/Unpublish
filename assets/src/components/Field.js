@@ -1,6 +1,6 @@
 import React from '@wordpress/element';
 import PropTypes from 'prop-types';
-import { __experimentalGetSettings } from '@wordpress/date';
+import { __experimentalGetSettings, getDate, isInTheFuture } from '@wordpress/date';
 import { withSelect, withDispatch } from '@wordpress/data';
 import { compose } from '@wordpress/compose';
 import { DateTimePicker } from '@wordpress/components';
@@ -22,11 +22,15 @@ function is12HourTime() {
 	return result;
 }
 
+function isDateValid( date ) {
+	return isInTheFuture( date );
+}
+
 export function Field( { date, onUpdateDate } ) {
 	return (
 		<DateTimePicker
 			key="unpublish-date-time-picker"
-			currentDate={ date }
+			currentDate={ date * 1000 }
 			onChange={ onUpdateDate }
 			is12Hour={ is12HourTime() }
 		/>
@@ -50,9 +54,15 @@ const FieldWithData = compose( [
 
 		return {
 			onUpdateDate( date ) {
+				if ( ! isDateValid( date ) ) {
+					return;
+				}
+
+				const timestamp = getDate( date ).getTime() / 1000;
+
 				editPost( {
 					meta: {
-						unpublish_timestamp: date,
+						unpublish_timestamp: timestamp,
 					},
 				} );
 			},
