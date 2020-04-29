@@ -1,8 +1,8 @@
 import React from '@wordpress/element';
 import { Dropdown, Button } from '@wordpress/components';
 
-import Field from '../Field';
-import Label from '../Label';
+import Field from './Field';
+import Label from './Label';
 
 const CONTENT_CLASSNAME = 'edit-post-post-unpublish__dialog';
 
