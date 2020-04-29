@@ -203,6 +203,10 @@ function save_unpublish_timestamp( int $post_id, WP_Post $post ) : void {
 		return;
 	}
 
+	if ( ! isset( $_REQUEST[ NONCE_NAME ] ) ) {
+		return;
+	}
+
 	check_admin_referer( NONCE_NAME, NONCE_NAME );
 
 	$units       = [ 'aa', 'mm', 'jj', 'hh', 'mn' ];
