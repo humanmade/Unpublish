@@ -25,9 +25,11 @@ function attach_hooks() : void {
 		return;
 	}
 
-	add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets' );
 	add_action( 'post_submitbox_misc_actions', __NAMESPACE__ . '\\render_field', 1 );
 	add_action( 'save_post_' . $post_type, __NAMESPACE__ . '\\save_unpublish_timestamp', 10, 2 );
+
+	add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets' );
+	add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\remove_enqueue_assets_action' );
 }
 
 /**
@@ -180,6 +182,13 @@ function enqueue_assets() : void {
 }
 
 /**
+ * Remove enqueue assets action if the block editor is used
+ */
+function remove_enqueue_assets_action() : void {
+	remove_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_assets' );
+}
+
+/**
  * Save the unpublish time for a given post
  *
  * @param int     $post_id Post ID.
@@ -191,6 +200,10 @@ function save_unpublish_timestamp( int $post_id, WP_Post $post ) : void {
 	}
 
 	if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		return;
+	}
+
+	if ( ! isset( $_REQUEST[ NONCE_NAME ] ) ) {
 		return;
 	}
 

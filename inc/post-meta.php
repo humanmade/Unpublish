@@ -10,10 +10,29 @@ use HM\Unpublish;
  * Post Meta Bootstrapper
  */
 function bootstrap() : void {
+	add_action( 'registered_post_type', __NAMESPACE__ . '\\register_meta', 99 );
 	add_action( 'added_post_meta', __NAMESPACE__ . '\\update_schedule', 10, 4 );
 	add_action( 'updated_post_meta', __NAMESPACE__ . '\\update_schedule', 10, 4 );
 	add_action( 'deleted_post_meta', __NAMESPACE__ . '\\remove_schedule', 10, 3 );
 	add_filter( 'is_protected_meta', __NAMESPACE__ . '\\protect_meta_key', 10, 3 );
+}
+
+/**
+ * Register meta
+ *
+ * @param string $post_type Post type.
+ */
+function register_meta( string $post_type ) : void {
+	if ( ! post_type_supports( $post_type, Unpublish\FEATURE_NAME ) ) {
+		return;
+	}
+
+	register_post_meta( $post_type, Unpublish\POST_META_KEY, [
+		'description'  => __( 'Unpublish time', 'unpublish' ),
+		'show_in_rest' => true,
+		'single'       => true,
+		'type'         => 'integer',
+	] );
 }
 
 /**

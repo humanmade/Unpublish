@@ -7,6 +7,7 @@ module.exports = function( env, args ) {
 	return {
 		mode,
 		entry: {
+			'block-editor': './assets/src/block-editor.js',
 			'classic-editor': './assets/src/classic-editor.js',
 		},
 		output: {
@@ -19,8 +20,10 @@ module.exports = function( env, args ) {
 			'@wordpress/compose': { this: [ 'wp', 'compose' ] },
 			'@wordpress/components': { this: [ 'wp', 'components' ] },
 			'@wordpress/data': { this: [ 'wp', 'data' ] },
+			'@wordpress/date': { this: [ 'wp', 'date' ] },
 			'@wordpress/dom-ready': { this: [ 'wp', 'domReady' ] },
 			'@wordpress/edit-post': { this: [ 'wp', 'editPost' ] },
+			'@wordpress/editor': { this: [ 'wp', 'editor' ] },
 			'@wordpress/element': { this: [ 'wp', 'element' ] },
 			'@wordpress/i18n': { this: [ 'wp', 'i18n' ] },
 			'@wordpress/plugins': { this: [ 'wp', 'plugins' ] },
