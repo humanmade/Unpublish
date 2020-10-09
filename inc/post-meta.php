@@ -28,10 +28,13 @@ function register_meta( string $post_type ) : void {
 	}
 
 	register_post_meta( $post_type, Unpublish\POST_META_KEY, [
-		'description'  => __( 'Unpublish time', 'unpublish' ),
-		'show_in_rest' => true,
-		'single'       => true,
-		'type'         => 'integer',
+		'description'   => __( 'Unpublish time', 'unpublish' ),
+		'show_in_rest'  => true,
+		'single'        => true,
+		'type'          => 'integer',
+		'auth_callback' => function () {
+			return current_user_can( 'edit_posts' );
+		},
 	] );
 }
 
