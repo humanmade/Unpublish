@@ -43,17 +43,17 @@ function register_meta( string $post_type ) : void {
  * @param string $meta_key   Meta key.
  * @param mixed  $meta_value Meta value.
  *
- * @return bool
+ * @return void
  */
-function update_schedule( int $meta_id, int $object_id, string $meta_key, $meta_value ) : bool {
+function update_schedule( int $meta_id, int $object_id, string $meta_key, $meta_value ) : void {
 	if ( $meta_key !== Unpublish\POST_META_KEY ) {
-		return false;
+		return;
 	}
 
 	if ( $meta_value ) {
-		return Unpublish\schedule_unpublish( $object_id, absint( $meta_value ) );
+		Unpublish\schedule_unpublish( $object_id, absint( $meta_value ) );
 	} else {
-		return Unpublish\unschedule_unpublish( $object_id );
+		Unpublish\unschedule_unpublish( $object_id );
 	}
 }
 
@@ -63,15 +63,11 @@ function update_schedule( int $meta_id, int $object_id, string $meta_key, $meta_
  * @param int[]  $meta_ids   An array of deleted metadata entry IDs.
  * @param int    $object_id  Object ID.
  * @param string $meta_key   Meta key.
- *
- * @return bool
  */
-function remove_schedule( array $meta_ids, int $object_id, string $meta_key ) : bool {
+function remove_schedule( array $meta_ids, int $object_id, string $meta_key ) : void {
 	if ( $meta_key === Unpublish\POST_META_KEY ) {
-		return Unpublish\unschedule_unpublish( $object_id );
+		Unpublish\unschedule_unpublish( $object_id );
 	}
-
-	return false;
 }
 
 /**
