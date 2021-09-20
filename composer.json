@@ -1,0 +1,15 @@
+{
+  "name": "humanmade/unpublish",
+  "description": "Adds a setting under Publish in the WordPress post editor screen to allow unpublishing a post at a given date",
+  "type": "library",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Human Made",
+      "email": "hello@humanmade.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.1"
+  }
+}
